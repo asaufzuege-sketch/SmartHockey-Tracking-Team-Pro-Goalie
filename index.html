@@ -582,6 +582,21 @@
 
   <!-- GLOBAL MODALS - Must be outside all .page containers -->
   
+  <!-- Goalie Minutes Modal (shown after Goal Value export modal) -->
+  <div id="goalieMinutesModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Goalie – Spielzeit</h3>
+      <p style="font-size:0.85rem;margin:0 0 12px;opacity:0.8;">0 oder leer = hat nicht gespielt</p>
+      <div id="goalieMinutesFields">
+        <!-- Dynamisch befüllt -->
+      </div>
+      <div class="modal-buttons">
+        <button id="goalieMinutesConfirm" class="confirm-btn">Bestätigen</button>
+        <button id="goalieMinutesCancel" class="cancel-btn">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Goal Value Export Modal (for Export Season button) -->
   <div id="goalValueExportModal" class="modal" style="display: none;">
     <div class="modal-content">
