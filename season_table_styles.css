@@ -49,3 +49,22 @@
 /* Keep parity with existing .even-row/.odd-row classes used elsewhere */
 .goal-value-table .even-row { background: var(--row-even); }
 .goal-value-table .odd-row { background: var(--row-odd); }
+
+/* Goalie Season Table */
+.goalie-table-fixed,
+.goalie-table-scroll {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.goalie-table-scroll {
+  /* Mindestbreite, damit die horizontale Scrollbar auch bei der Goalie-Tabelle greift */
+  min-width: max-content;
+}
+
+.goalie-section-separator {
+  background: var(--bg, inherit);
+  border-top: 2px solid var(--border, #555);
+  color: var(--text-muted, #888);
+}

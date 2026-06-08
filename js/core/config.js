@@ -15,6 +15,8 @@ const App = {
     statsData: {},
     playerTimes: {},
     seasonData: {},
+    goalieSeasonData: {},      // Goalie-Saisondaten: { [goalieName]: { num, name, games, minutes, goalsAgainst, shotsAgainst, shutouts, gvAgainst[] } }
+    goalieExportSnapshot: {},  // Snapshot der zuletzt exportierten kumulativen goalMapData-Zähler pro Goalie
     shotsForOnIce: {},
     shotsAgainstOnIce: {},
     activeTimers: {},

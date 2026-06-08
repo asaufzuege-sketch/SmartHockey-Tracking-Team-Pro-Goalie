@@ -79,6 +79,22 @@ App.storage = {
     }
 
     try {
+      const goalieSeasonDataStr = AppStorage.getItem(`goalieSeasonData_${teamId}`);
+      App.data.goalieSeasonData = goalieSeasonDataStr ? JSON.parse(goalieSeasonDataStr) : {};
+    } catch (e) {
+      console.error('Error loading goalieSeasonData:', e);
+      App.data.goalieSeasonData = {};
+    }
+
+    try {
+      const goalieExportSnapshotStr = AppStorage.getItem(`goalieExportSnapshot_${teamId}`);
+      App.data.goalieExportSnapshot = goalieExportSnapshotStr ? JSON.parse(goalieExportSnapshotStr) : {};
+    } catch (e) {
+      console.error('Error loading goalieExportSnapshot:', e);
+      App.data.goalieExportSnapshot = {};
+    }
+
+    try {
       const shotsForOnIceStr = AppStorage.getItem(`shotsForOnIce_${teamId}`);
       App.data.shotsForOnIce = shotsForOnIceStr ? JSON.parse(shotsForOnIceStr) : {};
     } catch (e) {
@@ -113,6 +129,16 @@ App.storage = {
   saveSeasonData() {
     const teamId = App.helpers.getCurrentTeamId();
     AppStorage.setItem(`seasonData_${teamId}`, JSON.stringify(App.data.seasonData));
+  },
+
+  saveGoalieSeasonData() {
+    const teamId = App.helpers.getCurrentTeamId();
+    AppStorage.setItem(`goalieSeasonData_${teamId}`, JSON.stringify(App.data.goalieSeasonData));
+  },
+
+  saveGoalieExportSnapshot() {
+    const teamId = App.helpers.getCurrentTeamId();
+    AppStorage.setItem(`goalieExportSnapshot_${teamId}`, JSON.stringify(App.data.goalieExportSnapshot));
   },
 
   saveShotsForOnIce() {
@@ -161,6 +187,7 @@ App.storage = {
     this.saveStatsData();
     this.savePlayerTimes();
     this.saveSeasonData();
+    this.saveGoalieSeasonData();
     this.saveOnIceShotCounts();
     this.saveSeasonMapData(); // NEW: defensive re-save for Season Map data
   },
