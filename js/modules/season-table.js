@@ -667,59 +667,59 @@ setStickyOffsets() {
     gFixedThead.appendChild(gFixedHeaderRow);
     goalieFixedTable.appendChild(gFixedThead);
 
-    // --- Goalie Scroll-Tabelle (22 Spalten, ausgerichtet zur Spieler-Tabelle) ---
+    // --- Goalie Scroll-Tabelle (Option B: 11 gleich breite Spalten, width:100% via CSS) ---
     const goalieScrollTable = document.createElement("table");
     goalieScrollTable.className = "season-table-scroll goalie-table-scroll";
-    goalieScrollTable.style.tableLayout = "fixed";
+    // <colgroup> mit 11 gleich breiten Spalten (je 100/11 %) — KEINE Pixel, KEINE JS-Messung
     const goalieColGroup = document.createElement("colgroup");
-    for (let i = 0; i < 22; i++) goalieColGroup.appendChild(document.createElement("col"));
+    for (let i = 0; i < 11; i++) {
+      const col = document.createElement("col");
+      col.style.width = (100 / 11) + "%";
+      goalieColGroup.appendChild(col);
+    }
     goalieScrollTable.appendChild(goalieColGroup);
 
     const gScrollThead = document.createElement("thead");
     const gScrollHeaderRow = document.createElement("tr");
-    const goalieHeaderMap = {
-      0: { label: "Games", key: "games" },
-      1: { label: "MIN", key: "minutesDec" },
-      2: { label: "GA", key: "ga" },
-      3: { label: "SA", key: "sa" },
-      4: { label: "SV", key: "sv" },
-      5: { label: "Sv%", key: "svPctSort" },
-      6: { label: "GAA", key: "gaaValue" },
-      7: { label: "SO", key: "shutouts" },
-      12: { label: "Goal Value", key: "goalieGoalValue" },
-      20: { label: "MVP", key: "mvpRank" },
-      21: { label: "MVP Points", key: "mvpPointsRounded" }
-    };
-    for (let colIdx = 0; colIdx < 22; colIdx++) {
+    // 11 Spalten in fester Reihenfolge (Index 0–10)
+    const goalieHeaders = [
+      { label: "Games",      key: "games" },           // 0
+      { label: "MIN",        key: "minutesDec" },       // 1
+      { label: "GA",         key: "ga" },               // 2
+      { label: "SA",         key: "sa" },               // 3
+      { label: "SV",         key: "sv" },               // 4
+      { label: "Sv%",        key: "svPctSort" },        // 5
+      { label: "GAA",        key: "gaaValue" },         // 6
+      { label: "SO",         key: "shutouts" },         // 7
+      { label: "Goal Value", key: "goalieGoalValue" },  // 8
+      { label: "MVP",        key: "mvpRank" },          // 9
+      { label: "MVP Points", key: "mvpPointsRounded" }  // 10
+    ];
+    goalieHeaders.forEach(def => {
       const th = document.createElement("th");
-      const def = goalieHeaderMap[colIdx];
-      if (def) {
-        th.textContent = def.label;
-        th.className = "sortable";
-        th.style.cursor = "pointer";
-        th.dataset.goalieSortKey = def.key;
-        const arrow = document.createElement("span");
-        arrow.className = "sort-arrow";
-        arrow.style.marginLeft = "6px";
-        if (this.goalieSortState.key === def.key) {
-          arrow.textContent = this.goalieSortState.asc ? "▴" : "▾";
-        }
-        th.appendChild(arrow);
-        th.addEventListener("click", () => {
-          if (this.goalieSortState.key === def.key) {
-            this.goalieSortState.asc = !this.goalieSortState.asc;
-          } else {
-            this.goalieSortState.key = def.key;
-            this.goalieSortState.asc = true;
-          }
-          this.render();
-          if (this.positionFilter) this.filterByPosition(this.positionFilter);
-        });
-      } else {
-        th.textContent = "";
+      th.textContent = def.label;
+      th.className = "sortable";
+      th.style.cursor = "pointer";
+      th.dataset.goalieSortKey = def.key;
+      const arrow = document.createElement("span");
+      arrow.className = "sort-arrow";
+      arrow.style.marginLeft = "6px";
+      if (this.goalieSortState.key === def.key) {
+        arrow.textContent = this.goalieSortState.asc ? "▴" : "▾";
       }
+      th.appendChild(arrow);
+      th.addEventListener("click", () => {
+        if (this.goalieSortState.key === def.key) {
+          this.goalieSortState.asc = !this.goalieSortState.asc;
+        } else {
+          this.goalieSortState.key = def.key;
+          this.goalieSortState.asc = true;
+        }
+        this.render();
+        if (this.positionFilter) this.filterByPosition(this.positionFilter);
+      });
       gScrollHeaderRow.appendChild(th);
-    }
+    });
     gScrollThead.appendChild(gScrollHeaderRow);
     goalieScrollTable.appendChild(gScrollThead);
 
@@ -845,21 +845,19 @@ setStickyOffsets() {
       });
     }
 
-    const createGoalieCells = (row) => {
-      const cells = new Array(22).fill("");
-      cells[0] = row.games;
-      cells[1] = row.minutes;
-      cells[2] = row.ga;
-      cells[3] = row.sa;
-      cells[4] = row.sv;
-      cells[5] = row.svPct;
-      cells[6] = row.gaa;
-      cells[7] = row.shutouts;
-      cells[12] = row.goalieGoalValue;
-      cells[20] = row.mvpRank;
-      cells[21] = row.mvpPointsRounded.toFixed(1);
-      return cells;
-    };
+    const createGoalieCells = (row) => [
+      row.games,                           // 0: Games
+      row.minutes,                         // 1: MIN
+      row.ga,                              // 2: GA
+      row.sa,                              // 3: SA
+      row.sv,                              // 4: SV
+      row.svPct,                           // 5: Sv%
+      row.gaa,                             // 6: GAA
+      row.shutouts,                        // 7: SO
+      row.goalieGoalValue,                 // 8: Goal Value
+      row.mvpRank,                         // 9: MVP
+      row.mvpPointsRounded.toFixed(1)      // 10: MVP Points
+    ];
 
     displayGoalieRows.forEach((row, rowIndex) => {
       const rowClass = (rowIndex % 2 === 0) ? "even-row" : "odd-row";
@@ -899,7 +897,7 @@ setStickyOffsets() {
 
       const emptyScrollTr = document.createElement("tr");
       const emptyScrollTd = document.createElement("td");
-      emptyScrollTd.colSpan = 22;
+      emptyScrollTd.colSpan = 11;
       emptyScrollTd.textContent = "Keine Goalie-Saison-Daten";
       emptyScrollTd.style.textAlign = "center";
       emptyScrollTd.style.opacity = "0.5";
@@ -933,16 +931,20 @@ setStickyOffsets() {
 
       const gScrollTotalTr = document.createElement("tr");
       gScrollTotalTr.className = "total-row";
-      const totalCells = new Array(22).fill("");
-      totalCells[1] = formatMinutes(totals.minutesDec);
-      totalCells[2] = totalGA;
-      totalCells[3] = totalSA;
-      totalCells[4] = totalSV;
-      totalCells[5] = totalSvPct;
-      totalCells[6] = totalGAA;
-      totalCells[7] = "";
-      totalCells[20] = "";
-      totalCells[21] = "";
+      // 11-Spalten total row: Games leer, MIN=Summe, GA/SA/SV=Summen, Sv%/GAA=Ø, rest leer
+      const totalCells = [
+        "",                                // 0: Games (leer)
+        formatMinutes(totals.minutesDec),  // 1: MIN
+        totalGA,                           // 2: GA
+        totalSA,                           // 3: SA
+        totalSV,                           // 4: SV
+        totalSvPct,                        // 5: Sv%
+        totalGAA,                          // 6: GAA
+        "",                                // 7: SO (leer)
+        "",                                // 8: Goal Value (leer)
+        "",                                // 9: MVP (leer)
+        ""                                 // 10: MVP Points (leer)
+      ];
       totalCells.forEach(val => {
         const td = document.createElement("td");
         td.textContent = val;
@@ -956,37 +958,6 @@ setStickyOffsets() {
 
     fixedContainer.appendChild(goalieFixedTable);
     tableScrollWrapper.appendChild(goalieScrollTable);
-
-    const syncGoalieColumnWidths = (attempt = 0) => {
-      const playerScrollTable = tableScrollWrapper.querySelector("table.season-table-scroll:not(.goalie-table-scroll)");
-      if (!playerScrollTable) return;
-      const playerHeaderCells = Array.from(playerScrollTable.querySelectorAll("thead th"));
-      if (playerHeaderCells.length !== 22) {
-        if (attempt < 4) requestAnimationFrame(() => syncGoalieColumnWidths(attempt + 1));
-        return;
-      }
-
-      const widths = playerHeaderCells.map((th) => th.getBoundingClientRect().width);
-      const hasZeroWidth = widths.some((w) => !Number.isFinite(w) || w <= 0);
-      if (hasZeroWidth) {
-        if (attempt < 4) requestAnimationFrame(() => syncGoalieColumnWidths(attempt + 1));
-        return;
-      }
-
-      const goalieCols = goalieColGroup.querySelectorAll("col");
-      widths.forEach((width, idx) => {
-        if (!goalieCols[idx]) return;
-        goalieCols[idx].style.width = `${width}px`;
-      });
-
-      const playerTableWidth = playerScrollTable.getBoundingClientRect().width;
-      if (playerTableWidth > 0) {
-        const exactWidth = `${playerTableWidth}px`;
-        goalieScrollTable.style.width = exactWidth;
-        goalieScrollTable.style.minWidth = exactWidth;
-      }
-    };
-    requestAnimationFrame(() => syncGoalieColumnWidths());
   },
 
 
