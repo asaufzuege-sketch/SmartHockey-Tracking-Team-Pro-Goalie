@@ -671,11 +671,6 @@ setStickyOffsets() {
     goalieScrollTable.className = "season-table-scroll goalie-table-scroll";
     goalieScrollTable.style.width = "100%";
 
-    const playerScrollTable = tableScrollWrapper.querySelector(".season-table-scroll:not(.goalie-table-scroll)");
-    if (playerScrollTable && playerScrollTable.scrollWidth > 0) {
-      goalieScrollTable.style.minWidth = `${playerScrollTable.scrollWidth}px`;
-    }
-
     const gScrollThead = document.createElement("thead");
     const gScrollHeaderRow = document.createElement("tr");
     ["Games", "MIN", "GA", "SA", "SV", "Sv%", "GAA", "SO", "Goal Value", "MVP", "MVP Points"].forEach(text => {
