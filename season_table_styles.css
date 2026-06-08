@@ -93,10 +93,7 @@
 }
 
 .goalie-table-scroll {
-  table-layout: fixed;
-  width: 100% !important;
-  /* Mindestbreite, damit die horizontale Scrollbar auch bei der Goalie-Tabelle greift */
-  min-width: max-content;
+  width: 100%;
 }
 
 .goalie-section-separator {
