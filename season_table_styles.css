@@ -93,7 +93,7 @@
 }
 
 .goalie-table-scroll {
-  width: 100%;
+  table-layout: fixed;
 }
 
 .goalie-section-separator {
