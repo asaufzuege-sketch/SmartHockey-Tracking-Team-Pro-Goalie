@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="SmartHockey Tracking Team Pro - The professional hockey team management solution. Advanced statistics, player performance tracking, season analytics, and comprehensive team management for serious hockey teams.">
+  <meta name="keywords" content="Hockey, Team Statistics, Pro, Professional, Tracking, Ice Hockey, Inline Hockey, Team Management, Player Stats, Analytics, SmartHockey, Season Stats">
+  <meta name="author" content="SmartHockey Products">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asaufzuege-sketch.github.io/SmartHockey-Tracking-Team-Pro">
+  <title>SmartHockey Tracking Team Pro - Professional Hockey Team Statistics & Analytics</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SmartHockey">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="SmartHockey Tracking Team Pro - Professional Hockey Statistics">
+  <meta property="og:description" content="The professional hockey team management solution. Advanced statistics, player performance tracking, season analytics, and comprehensive team management.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://asaufzuege-sketch.github.io/SmartHockey-Tracking-Team-Pro">
+  <meta property="og:image" content="https://asaufzuege-sketch.github.io/SmartHockey-Tracking-Team-Pro/icons/icon-512.png">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="SmartHockey Products">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SmartHockey Tracking Team Pro">
+  <meta name="twitter:description" content="The professional hockey team management solution. Advanced statistics and analytics.">
+  <meta name="twitter:image" content="https://asaufzuege-sketch.github.io/SmartHockey-Tracking-Team-Pro/icons/icon-512.png">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="48x48" href="icons/icon-48.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  
+  <link rel="stylesheet" href="style.css?v=3.0.0" />
+  <link rel="stylesheet" href="season_table_styles.css?v=3.0.0" />
+  <link rel="stylesheet" href="season_map_momentum.css?v=3.0.0" />
+  
+  <!-- Force CSS to be parsed before continuing -->
+  <script>
+  // Force CSS to be parsed before continuing
+  document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+    if (!link.sheet) {
+      link.media = 'print';
+      link.onload = function() { this.media = 'all'; };
+    }
+  });
+  </script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+  <!-- Storage Migration Script - Must run BEFORE any other scripts -->
+  <script>
+  (function migrateStorage() {
+    const PREFIX = 'sPro_';
+    const migrationDoneKey = PREFIX + 'migration_done';
+    
+    // Skip if already migrated
+    if (localStorage.getItem(migrationDoneKey)) {
+      console.log('[Storage] Migration already completed');
+      return;
+    }
+    
+    console.log('[Storage Migration] Starting migration...');
+    
+    // Collect all keys that need migration (not starting with any app prefix)
+    // Get all keys first to avoid issues with modifying localStorage during iteration
+    const allKeys = Object.keys(localStorage);
+    const excludedPrefixes = ['sPro_', 's918_', 'sLight_', 'sInline_', 's1player_', 's1team_'];
+    const keysToMigrate = allKeys.filter(key =>
+      key && !excludedPrefixes.some(prefix => key.startsWith(prefix))
+    );
+    
+    // Migrate all found keys
+    let migratedCount = 0;
+    keysToMigrate.forEach(key => {
+      const oldData = localStorage.getItem(key);
+      if (oldData !== null) {
+        const newKey = PREFIX + key;
+        // Only migrate if new key doesn't exist yet
+        if (localStorage.getItem(newKey) === null) {
+          localStorage.setItem(newKey, oldData);
+          migratedCount++;
+          console.log(`[Storage Migration] Migrated: ${key} → ${newKey}`);
+        }
+      }
+    });
+    
+    // Mark migration as done
+    localStorage.setItem(migrationDoneKey, 'true');
+    console.log(`[Storage Migration] Completed! Migrated ${migratedCount} keys.`);
+  })();
+  </script>
+</head>
+<body>
+
+  <!-- Subscription Paywall (only visible in native app when not subscribed) -->
+  <div id="subscriptionPaywall" style="display:none;">
+    <div class="paywall-container">
+      <img src="icons/icon-192.png" alt="SmartHockey Pro" class="paywall-logo">
+      <h1>SmartHockey Team Tracker</h1>
+      <p class="paywall-subtitle">Professional Hockey Team Management</p>
+      <div class="paywall-price">
+        <span class="price-amount">$5.00</span>
+        <span class="price-period">/ year</span>
+      </div>
+      <ul class="paywall-features">
+        <li>✅ Unlimited Teams &amp; Players</li>
+        <li>✅ Advanced Statistics &amp; Analytics</li>
+        <li>✅ Season Tracking &amp; Goal Maps</li>
+        <li>✅ Line-Up Management</li>
+        <li>✅ CSV Export &amp; Backup</li>
+        <li>✅ No Ads – Ever</li>
+      </ul>
+      <button id="subscribeBtn" class="paywall-btn" onclick="App.billing.purchase()">
+        Jetzt abonnieren – $5.00/Jahr
+      </button>
+      <button id="restoreBtn" class="paywall-btn-secondary" onclick="App.billing.restorePurchases()">
+        Käufe wiederherstellen
+      </button>
+
+      <!-- Lizenzcode-Bereich -->
+      <div class="license-section" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="font-size: 0.9rem; color: #8899aa; margin-bottom: 0.8rem;">Lizenzcode vorhanden?</p>
+        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+          <input type="text" id="licenseCodeInput" placeholder="Code eingeben" style="padding: 0.8rem; border-radius: 8px; border: 1px solid #444; background: #1a1a2e; color: #fff; width: 60%; font-size: 16px;" />
+          <button onclick="App.billing.applyLicenseCode()" style="padding: 0.8rem 1.2rem; border-radius: 8px; border: none; background: #4fc3f7; color: #000; font-weight: bold; cursor: pointer; font-size: 16px;">Einlösen</button>
+        </div>
+      </div>
+
+      <p class="paywall-legal" style="margin-top: 1.5rem;">
+        Das Abonnement verlängert sich jährlich automatisch. Jederzeit kündbar über Google Play.
+      </p>
+    </div>
+  </div>
+
+  <div id="appContent">
+
+  <!-- TEAMAUSWAHL SEITE (NEUE ERSTE SEITE) -->
+  <div id="teamSelectionPage" class="page">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="teamSelectionInfoBtn" class="top-btn">Info</button>
+      </div>
+    </div>
+    <h1>TEAM SELECTION</h1>
+    <p class="center-text">Select a team or create a new team</p>
+    
+    <!-- HIER: Dynamischer Container für Team-Buttons -->
+    <div id="teamSelectionContainer"></div>
+    
+    <div class="backup-buttons">
+        <button id="downloadBackupBtn" class="backup-btn">📥 Download Backup</button>
+        <button id="uploadBackupBtn" class="backup-btn">📤 Restore Backup</button>
+    </div>
+    
+    <!-- Team Name Edit Modal -->
+    <div id="teamEditModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h3>Edit Team Name</h3>
+        <input type="text" id="teamNameInput" placeholder="Enter team name" maxlength="30" />
+        <div class="modal-buttons">
+          <button id="saveTeamNameBtn" class="confirm-btn">Save</button>
+          <button id="cancelTeamEditBtn" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER SELECTION -->
+  <div id="playerSelectionPage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="backToTeamSelectionBtn" class="top-btn back-btn">← Team Selection</button>
+        <button id="gameDataBtn" class="top-btn game-data-btn">Game Center</button>
+        <button id="lineupBtn" class="top-btn lineup-btn">Line Up</button>
+        <button id="resetPlayersBtn" class="top-btn danger-btn">Reset</button>
+      </div>
+    </div>
+    <h1>PLAYER SELECTION</h1>
+    <p class="subtitle">Select the players to display in the table</p>
+    <div class="current-team-info">
+      <!-- "Team:" Text entfernt, nur noch der Teamname -->
+      <span id="currentTeamDisplay"></span>
+    </div>
+    <ul id="playerList" class="player-list"></ul>
+  </div>
+
+  <!-- STATS SEITE (GAME DATA) -->
+  <div id="statsPage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="timerBtn" class="top-btn timer timer-left reset" aria-label="Spieluhr">00:00</button>
+        <button id="selectPlayersBtn" class="top-btn">Select Players</button>
+        <button id="torbildBtn" class="top-btn">Goal Map</button>
+        <button id="goalValueBtn" class="top-btn">Goal Value</button>
+        <button id="exportSeasonFromStatsBtn" class="top-btn export-season">Export Season</button>
+        <button id="seasonBtn" class="top-btn season-highlight">Season</button>
+        <button id="seasonMapBtn" class="top-btn season-highlight">Season Map</button>
+        <button id="lineupBtnFromStats" class="top-btn lineup-btn">Line Up</button>
+        <button id="exportBtn" class="top-btn export-csv">Download</button>
+        <button id="resetBtn" class="top-btn danger-btn reset-btn">Reset</button>
+      </div>
+    </div>
+
+    <h1>GAME CENTER</h1>
+    <div class="current-team-info">
+      <!-- "Team:" Text entfernt -->
+      <span><strong id="statsTeamDisplay"></strong></span>
+    </div>
+    <div id="statsScrollContainer">
+      <div id="statsContainer"></div>
+    </div>
+  </div>
+
+  <!-- GOAL MAP SEITE -->
+  <div id="torbildPage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="backToStatsBtn" class="top-btn back-btn">← Back</button>
+        <select id="goalMapPlayerFilter" class="top-btn player-filter-btn">
+          <option value="">All Players</option>
+        </select>
+        <select id="goalMapGoalieFilter" class="top-btn player-filter-btn">
+          <option value="">All Goalies</option>
+        </select>
+        <button id="exportSeasonMapBtn" class="top-btn export-season">Export Season Map</button>
+        <button id="resetTorbildBtn" class="top-btn danger-btn reset-btn">Reset</button>
+      </div>
+    </div>
+    <h1>GOAL MAP</h1>
+    <div id="workflowStatusIndicator" class="workflow-indicator" style="display: none;">
+      <span id="workflowStatusText"></span>
+    </div>
+    <div class="torbild-layout">
+      <div class="field-column">
+        <div class="img-box field-box" id="fieldBox">
+          <img src="Spielfeld Overlay.png" alt="Spielfeld Overlay" />
+        </div>
+      </div>
+      <div class="goal-column">
+        <div class="img-box goal-img-box" id="goalGreenBox">
+          <img src="Tor Grün.png" alt="Tor (Grün)" />
+        </div>
+        <div class="img-box goal-img-box" id="goalRedBox">
+          <img src="Tor Rot.png" alt="Tor (Rot)" />
+        </div>
+        <div class="time-tracking-box" id="timeTrackingBox">
+          <div class="period" data-period="p1">
+            <div class="period-title">1st Period</div>
+            <div class="period-buttons top-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+            <div class="period-numbers">
+              <span class=" num-center">19 - 15</span><span class="num-center">14 - 10</span>
+              <span class="num-center">9 - 5</span><span class="num-center">4 - 0</span>
+            </div>
+            <div class="period-buttons bottom-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+          </div>
+          <div class="period" data-period="p2">
+            <div class="period-title">2nd Period</div>
+            <div class="period-buttons top-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+            <div class="period-numbers">
+              <span class=" num-center">19 - 15</span><span class="num-center">14 - 10</span>
+              <span class="num-center">9 - 5</span><span class="num-center">4 - 0</span>
+            </div>
+            <div class="period-buttons bottom-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+          </div>
+          <div class="period" data-period="p3">
+            <div class="period-title">3rd Period</div>
+            <div class="period-buttons top-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+            <div class="period-numbers">
+              <span class=" num-center">19 - 15</span><span class="num-center">14 - 10</span>
+              <span class="num-center">9 - 5</span><span class="num-center">4 - 0</span>
+            </div>
+            <div class="period-buttons bottom-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOAL VALUE PAGE -->
+  <div id="goalValuePage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="backFromGoalValueBtn" class="top-btn back-btn">← Back</button>
+        <button id="addOpponentBtn" class="top-btn back-btn">Add +</button>
+        <button id="resetGoalValueBtn" class="top-btn danger-btn reset-btn">Reset</button>
+      </div>
+    </div>
+    <div style="margin-top:18px; padding:10px;">
+      <h1>GOAL VALUE</h1>
+      <div id="goalValueContainer"></div>
+    </div>
+  </div>
+
+  <!-- SEASON MAP PAGE -->
+  <div id="seasonMapPage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="backToStatsFromSeasonMapBtn" class="top-btn back-btn">← Back</button>
+        <select id="seasonMapPlayerFilter" class="top-btn player-filter-btn">
+          <option value="">All Players</option>
+        </select>
+        <select id="seasonMapGoalieFilter" class="top-btn player-filter-btn">
+          <option value="">All Goalies</option>
+        </select>
+        <button id="exportSeasonMapPageBtn" class="top-btn export-csv">Download</button>
+        <button id="resetSeasonMapBtn" class="top-btn danger-btn reset-btn">Reset</button>
+      </div>
+    </div>
+    <h1>SEASON MAP</h1>
+    <div class="torbild-layout">
+      <div class="field-column">
+        <div class="img-box field-box" id="seasonFieldBox">
+          <img src="Spielfeld Overlay.png" alt="Spielfeld Overlay" />
+        </div>
+      </div>
+      <div class="goal-column">
+        <div class="img-box goal-img-box" id="seasonGoalGreenBox">
+          <img src="Tor Grün.png" alt="Tor (Grün)" />
+        </div>
+        <div class="img-box goal-img-box" id="seasonGoalRedBox">
+          <img src="Tor Rot.png" alt="Tor (Rot)" />
+        </div>
+        <div class="time-tracking-box" id="seasonMapTimeTrackingBox">
+          <div class="period" data-period="sp1">
+            <div class="period-title">1st Period</div>
+            <div class="period-buttons top-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+            <div class="period-numbers">
+              <span class="num-center">19 - 15</span><span class="num-center">14 - 10</span>
+              <span class="num-center">9 - 5</span><span class="num-center">4 - 0</span>
+            </div>
+            <div class="period-buttons bottom-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+          </div>
+          <div class="period" data-period="sp2">
+            <div class="period-title">2nd Period</div>
+            <div class="period-buttons top-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+            <div class="period-numbers">
+              <span class="num-center">19 - 15</span><span class="num-center">14 - 10</span>
+              <span class="num-center">9 - 5</span><span class="num-center">4 - 0</span>
+            </div>
+            <div class="period-buttons bottom-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+          </div>
+          <div class="period" data-period="sp3">
+            <div class="period-title">3rd Period</div>
+            <div class="period-buttons top-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+            <div class="period-numbers">
+              <span class="num-center">19 - 15</span><span class="num-center">14 - 10</span>
+              <span class="num-center">9 - 5</span><span class="num-center">4 - 0</span>
+            </div>
+            <div class="period-buttons bottom-row">
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+              <button class="time-btn">0</button><button class="time-btn">0</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEASON SEITE -->
+  <div id="seasonPage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="backToStatsFromSeasonBtn" class="top-btn back-btn">← Back</button>
+        <button id="exportSeasonBtn" class="top-btn export-csv">Download</button>
+        <button id="resetSeasonBtn" class="top-btn danger-btn reset-btn">Reset</button>
+      </div>
+    </div>
+    <h1>SEASON</h1>
+    <div id="seasonContainer"></div>
+    
+    <!-- Add Time Modal -->
+    <div id="addTimeModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h3>Add Time</h3>
+        <p>Player: <span id="addTimePlayerName"></span></p>
+        <p>Current Time: <span id="addTimeCurrentTime"></span></p>
+        
+        <div class="time-input-group">
+          <label>Add time (MM:SS):</label>
+          <input type="text" id="addTimeInput" placeholder="00:00" pattern="[0-9]{1,2}:[0-9]{2}">
+        </div>
+        
+        <div class="modal-buttons">
+          <button id="addTimeCancelBtn">Cancel</button>
+          <button id="addTimeConfirmBtn">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINE UP SEITE -->
+  <div id="lineUpPage" class="page" style="display:none;">
+    <div class="page-top">
+      <div class="top-bar">
+        <button id="lineUpPlayerSelectionBtn" class="top-btn back-btn">Player Selection</button>
+        <button id="lineUpChangeLineBtn" class="top-btn lineup-change-line-btn">Change Line</button>
+        <div class="player-out-container">
+          <button id="lineUpPlayerOutBtn" class="top-btn lineup-player-out-btn">Player out <span class="player-out-dot"></span></button>
+          <div id="playerOutDropdown" class="player-out-dropdown">
+            <div id="playerOutList" class="player-out-list">
+              <!-- Dynamisch gefüllt -->
+            </div>
+          </div>
+        </div>
+        <button id="lineUpGameDataBtn" class="top-btn game-data-btn">Game Center</button>
+        <button id="lineUpExportPdfBtn" class="top-btn lineup-export-pdf-btn">Download</button>
+      </div>
+    </div>
+    <h1 class="lineup-title">LINE UP</h1>
+    <div id="lineupModeLabel" class="lineup-mode-label">BALANCED</div>
+    
+    <div id="lineUpContainer">
+      <!-- 4 Linien (Forwards) -->
+      <div class="lineup-section lineup-forwards">
+        <div class="lineup-line" data-line="1">
+          <div class="lineup-line-row">
+            <button class="lineup-position" data-pos="LW" data-line="1">LW 1</button>
+            <button class="lineup-position lineup-center" data-pos="C" data-line="1">C 1</button>
+            <button class="lineup-position" data-pos="RW" data-line="1">RW 1</button>
+          </div>
+          <div class="lineup-line-stats">0G / +- 0 / 0 Sh</div>
+        </div>
+        <div class="lineup-line" data-line="2">
+          <div class="lineup-line-row">
+            <button class="lineup-position" data-pos="LW" data-line="2">LW 2</button>
+            <button class="lineup-position lineup-center" data-pos="C" data-line="2">C 2</button>
+            <button class="lineup-position" data-pos="RW" data-line="2">RW 2</button>
+          </div>
+          <div class="lineup-line-stats">0G / +- 0 / 0 Sh</div>
+        </div>
+        <div class="lineup-line" data-line="3">
+          <div class="lineup-line-row">
+            <button class="lineup-position" data-pos="LW" data-line="3">LW 3</button>
+            <button class="lineup-position lineup-center" data-pos="C" data-line="3">C 3</button>
+            <button class="lineup-position" data-pos="RW" data-line="3">RW 3</button>
+          </div>
+          <div class="lineup-line-stats">0G / +- 0 / 0 Sh</div>
+        </div>
+        <div class="lineup-line" data-line="4">
+          <div class="lineup-line-row">
+            <button class="lineup-position" data-pos="LW" data-line="4">LW 4</button>
+            <button class="lineup-position lineup-center" data-pos="C" data-line="4">C 4</button>
+            <button class="lineup-position" data-pos="RW" data-line="4">RW 4</button>
+          </div>
+          <div class="lineup-line-stats">0G / +- 0 / 0 Sh</div>
+        </div>
+      </div>
+      
+      <!-- 3 Defense Paare -->
+      <div class="lineup-section lineup-defense">
+        <div class="lineup-defense-pair" data-pair="1">
+          <button class="lineup-position" data-pos="DL" data-pair="1">DL 1</button>
+          <div class="lineup-pair-stats">0G / +- 0 / 0 Sh</div>
+          <button class="lineup-position" data-pos="DR" data-pair="1">DR 1</button>
+        </div>
+        <div class="lineup-defense-pair" data-pair="2">
+          <button class="lineup-position" data-pos="DL" data-pair="2">DL 2</button>
+          <div class="lineup-pair-stats">0G / +- 0 / 0 Sh</div>
+          <button class="lineup-position" data-pos="DR" data-pair="2">DR 2</button>
+        </div>
+        <div class="lineup-defense-pair" data-pair="3">
+          <button class="lineup-position" data-pos="DL" data-pair="3">DL 3</button>
+          <div class="lineup-pair-stats">0G / +- 0 / 0 Sh</div>
+          <button class="lineup-position" data-pos="DR" data-pair="3">DR 3</button>
+        </div>
+      </div>
+      
+      <!-- Special Teams Container -->
+      <div class="lineup-special-teams">
+        <!-- BOX PLAY Sektion (links) -->
+        <div class="lineup-section lineup-boxplay">
+          <h3 class="lineup-section-title">BOX PLAY</h3>
+          <div class="lineup-formation" data-formation="1">
+            <div class="lineup-formation-row">
+              <button class="lineup-position" data-pos="BP-W" data-formation="1">BP W 1</button>
+              <button class="lineup-position" data-pos="BP-C" data-formation="1">BP C 1</button>
+            </div>
+            <div class="lineup-formation-row">
+              <button class="lineup-position" data-pos="BP-DL" data-formation="1">BP DL 1</button>
+              <button class="lineup-position" data-pos="BP-DR" data-formation="1">BP DR 1</button>
+            </div>
+          </div>
+          <div class="lineup-formation" data-formation="2">
+            <div class="lineup-formation-row">
+              <button class="lineup-position" data-pos="BP-W" data-formation="2">BP W 2</button>
+              <button class="lineup-position" data-pos="BP-C" data-formation="2">BP C 2</button>
+            </div>
+            <div class="lineup-formation-row">
+              <button class="lineup-position" data-pos="BP-DL" data-formation="2">BP DL 2</button>
+              <button class="lineup-position" data-pos="BP-DR" data-formation="2">BP DR 2</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- POWER PLAY Sektion (rechts) -->
+        <div class="lineup-section lineup-powerplay">
+          <h3 class="lineup-section-title">POWER PLAY</h3>
+          <div class="lineup-formation" data-formation="1">
+            <div class="lineup-formation-row">
+              <button class="lineup-position" data-pos="PP-LW" data-formation="1">PP LW 1</button>
+              <button class="lineup-position" data-pos="PP-C" data-formation="1">PP C 1</button>
+              <button class="lineup-position" data-pos="PP-RW" data-formation="1">PP RW 1</button>
+            </div>
+            <div class="lineup-formation-row lineup-pp-defense">
+              <button class="lineup-position" data-pos="PP-DL" data-formation="1">PP DL 1</button>
+              <button class="lineup-position" data-pos="PP-DR" data-formation="1">PP DR 1</button>
+            </div>
+          </div>
+          <div class="lineup-formation" data-formation="2">
+            <div class="lineup-formation-row">
+              <button class="lineup-position" data-pos="PP-LW" data-formation="2">PP LW 2</button>
+              <button class="lineup-position" data-pos="PP-C" data-formation="2">PP C 2</button>
+              <button class="lineup-position" data-pos="PP-RW" data-formation="2">PP RW 2</button>
+            </div>
+            <div class="lineup-formation-row lineup-pp-defense">
+              <button class="lineup-position" data-pos="PP-DL" data-formation="2">PP DL 2</button>
+              <button class="lineup-position" data-pos="PP-DR" data-formation="2">PP DR 2</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Player Selection Modal -->
+    <div id="lineUpPlayerModal" class="modal" style="display: none;">
+      <div class="modal-content lineup-player-modal">
+        <h3 id="lineUpModalTitle">Select Player</h3>
+        <div id="lineUpPlayerList" class="lineup-player-list"></div>
+        <div class="modal-buttons">
+          <button id="lineUpClearPositionBtn" class="cancel-btn">Clear Position</button>
+          <button id="lineUpCancelModalBtn" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- GLOBAL MODALS - Must be outside all .page containers -->
+  
+  <!-- Goal Value Export Modal (for Export Season button) -->
+  <div id="goalValueExportModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Goal Value</h3>
+      
+      <div class="input-group">
+        <label for="opponentNameInput">Opponent Name:</label>
+        <input type="text" id="opponentNameInput" placeholder="Enter opponent" maxlength="30" />
+      </div>
+      
+      <div class="star-rating-group">
+        <label>Difficulty:</label>
+        <div id="starRating" class="star-rating">
+          <!-- 10 stars for 0.5 - 5.0 -->
+        </div>
+        <span id="starRatingValue">0</span>
+      </div>
+      
+      <div class="modal-buttons">
+        <button id="goalValueExportConfirm" class="confirm-btn">Confirm</button>
+        <button id="goalValueExportCancel" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /#appContent -->
+
+  <!-- Scripts -->
+  <script src="js/core/config.js?v=3.0.0"></script>
+  <script src="js/core/helpers.js?v=3.0.0"></script>
+  <script src="js/utils/indexeddb-backup.js?v=3.0.0"></script>
+  <script src="js/utils/storage.js?v=3.0.0"></script>
+  <script src="js/utils/marker-handler.js?v=3.0.0"></script>
+  <script src="js/modules/timer.js?v=3.0.0"></script>
+  <script src="js/modules/csv-handler.js?v=3.0.0"></script>
+  <script src="js/modules/team-selection.js?v=3.0.0"></script>
+  <script src="js/modules/player-selection.js?v=3.0.0"></script>
+  <script src="js/modules/stats-table.js?v=3.0.0"></script>
+  <script src="js/modules/season-table.js?v=3.0.0"></script>
+  <script src="js/modules/goal-map.js?v=3.0.0"></script>
+  <script src="js/modules/season-map.js?v=3.0.0"></script>
+  <script src="js/modules/goal-value.js?v=3.0.0"></script>
+  <script src="js/modules/line-up.js?v=3.0.0"></script>
+  <script src="js/modules/page-info.js?v=3.0.0"></script>
+  <script src="js/modules/theme-toggle.js?v=3.0.0"></script>
+  <script src="js/modules/billing.js?v=3.0.0"></script>
+  <script src="js/app.js?v=3.0.0"></script>
+  <script src="season_table_ui_patch.js?v=3.0.0"></script>
+  <script src="season_map_momentum.js?v=3.0.0"></script>
+  <script src="enhancements-wakelock.js?v=3.0.0"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      // KRITISCH: updateViaCache auf 'none' setzen!
+      navigator.serviceWorker.register('./service-worker.js', {
+        updateViaCache: 'none'
+      }).then(reg => {
+        console.log('[App] Service Worker registered');
+        
+        // Request persistent storage to prevent mobile browsers from deleting data
+        if (navigator.storage && navigator.storage.persist) {
+          navigator.storage.persist().then(granted => {
+            if (granted) {
+              console.log('[App] ✅ Persistent storage granted - data will NOT be auto-deleted');
+            } else {
+              console.log('[App] ⚠️ Persistent storage not granted');
+            }
+          }).catch(err => console.log('[App] Persistent storage request failed:', err));
+        }
+        
+        // Prüfe sofort auf Updates
+        reg.update();
+        
+        // Bei neuem SW: Seite neu laden
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'activated') {
+              console.log('[App] New version activated, reloading...');
+              window.location.reload();
+            }
+          });
+        });
+      }).catch(err => console.log('[App] Service Worker registration failed:', err));
+      
+      // Bei Controller-Wechsel: Seite neu laden
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[App] Controller changed, reloading...');
+        window.location.reload();
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.asaufzuege_sketch.twa",
+  "appName": "SmartHockey Team Tracker",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {}
+}

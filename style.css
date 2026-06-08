@@ -1,0 +1,4042 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --header-bg: #1E1E1E;
+  --row-even: #f0f0f0;
+  --row-odd: #e0e0e0;
+  --page-title-start: #266EFF;
+  --page-title-end: #266EFF;
+  --cell-pos-color: #00c06f;
+  --cell-neg-color: #ff4c4c;
+  --cell-zero-color: #000000;
+  --btn-top-bg: #c8fbc8;
+  --btn-bottom-bg: #ffe7e7;
+  --timer-active-color: #005c2f;
+  --timer-left-bg: #2A2F36;
+  --sticky-header-height: 56px;
+  --ice-top: #00c06f;
+  --ice-bottom: #ff4c4c;
+  
+  /* NEU: Hintergrund für Bilderboxen (Light Mode: Weiß) */
+  --img-box-bg: #ffffff;
+  
+  /* NEU: Hintergrund & Text für Time Box (Light Mode: Weiß/Schwarz) */
+  --time-box-bg: #ffffff;
+  --time-box-text: #000000;
+  
+  /* NEU: Perioden-Boxen sollen "bleiben wie sie sind" (dunkel mit weißem Text) */
+  --period-bg: #2a2a2a;
+  --period-text: #ffffff;
+  
+  /* Season Table Spaltenbreiten - Desktop fixed widths */
+  --w-nr: 36px;
+  --w-player: 140px;
+  --w-pos: 60px;
+  
+  /* Season Table scroll container height offset */
+  --table-scroll-offset: 250px;
+  
+  /* Season Table row colors for dark mode */
+  --row-dark-even: #2a2a2a;  /* Dark gray */
+  --row-dark-odd: #3a3a3a;   /* LIGHTER gray - Must be noticeably lighter than even! */
+
+  /* Light Mode - hellere Zeilen */
+  --row-even: #f7f7f7;
+  --row-odd: #ededed;
+
+}
+
+[data-theme="dark"] {
+  --bg-color: #111111;
+  --text-color: #ffffff;
+  --header-bg: #1E1E1E;
+  --row-even: #333333;
+  --row-odd: #4a4a4a;  /* HELLER als even - must be noticeably lighter */
+  --cell-pos-color: #00ff80;
+  --cell-neg-color: #ff4c4c;
+  --cell-zero-color: #ffffff;
+  --timer-left-bg: #2A2F36;
+  
+  /* NEU: Hintergrund für Bilderboxen (Dark Mode: Dunkel) */
+  --img-box-bg: #1e1e1e;
+  
+  /* NEU: Hintergrund & Text für Time Box (Dark Mode: Dunkel/Weiß) */
+  --time-box-bg: #1a1a1a;
+  --time-box-text: #ffffff;
+  
+  /* NEU: Perioden-Boxen (Dark Mode: transparent dunkel) */
+  --period-bg: rgba(255,255,255,0.05);
+  --period-text: #ffffff;
+}
+
+/* Global für alle Seiten - Verhindere Browser-Zoom bei Doppelklick */
+html {
+  touch-action: manipulation;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.page {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.page-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+h1 {
+  text-align: center;
+  margin: 12px 0 12px 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--page-title-start) 0%, var(--page-title-end) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+#goalValuePage h1,
+#seasonPage h1,
+#seasonMapPage h1,
+#playerSelectionPage h1 {
+  font-family: "Astroz", "Segoe UI", sans-serif;
+  font-size: 1.69em;
+  margin: 12px 0 12px 0;
+  text-align: center;
+}
+
+/* Title Info Icon - small, subtle icon next to title */
+.center-text { text-align: center; color: #888; margin-top: 6px; }
+
+.player-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px auto;
+  max-width: 600px;
+}
+.player-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--header-bg);
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: 6px 0;
+}
+.player-list li span { color: #fff; }
+#playerSelectionPage input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #e3fba7;
+}
+.player-list .num {
+  width: 48px;
+  text-align: center;
+  font-weight: 700;
+  color: #fff;
+}
+.player-list input[type="text"] {
+  background: var(--row-even);
+  color: var(--text-color);
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 6px 8px;
+  flex: 1;
+}
+
+/* Aktuelles Team mittig & im Player-Selection-Stil anzeigen */
+#playerSelectionPage .current-team-info {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+#playerSelectionPage #currentTeamDisplay {
+  font-family: "Astroz", "Segoe UI", sans-serif;
+  font-size: 1.69em;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--page-title-start) 0%, var(--page-title-end) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
+/* Basis Top-Bar (für alle Seiten) */
+.top-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px 0;
+  width: 100%;
+  max-width: 900px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* SPEZIFISCH: GAME DATA */
+#statsPage .top-bar {
+  max-width: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: clamp(6px, 1vw, 10px) !important;
+  overflow-x: hidden !important;
+  padding: 8px 0 !important;
+}
+#statsPage .top-btn,
+#statsPage .import-csv-btn {
+  flex: 1 1 auto !important;
+  min-width: auto !important;
+  white-space: nowrap !important;
+  font-size: clamp(0.80rem, 1.0vw, 0.95rem) !important;
+  padding: clamp(6px, 0.9vw, 8px) clamp(8px, 1.4vw, 14px) !important;
+  min-height: 40px !important;
+}
+#statsPage #timerBtn { font-variant-numeric: tabular-nums; }
+
+/* Theme Toggle Button - Only on Game Center page */
+#themeToggleBtn {
+  background: linear-gradient(to bottom, #d0d0d0, #808080);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1.2rem;  /* Larger icon size */
+  min-width: 40px !important;
+  max-width: 45px !important;
+  flex: 0 0 auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: none;
+}
+
+#themeToggleBtn:hover {
+  filter: brightness(1.1);
+}
+
+/* Dark Mode Styling for Theme Button */
+[data-theme="dark"] #themeToggleBtn {
+  background: linear-gradient(to bottom, #4a4a4a, #2a2a2a);
+  color: #fff;
+}
+
+/* Season-Seite Topbar */
+#seasonPage .top-bar {
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.top-btn,
+.import-csv-btn {
+  background: #2b2b2b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  min-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.top-btn:hover,
+.import-csv-btn:hover { background: #3b3b3b; }
+
+.top-btn.timer-left { background: var(--timer-left-bg); }
+.timer {
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: background-color 0.25s;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.timer.running { background: var(--cell-pos-color); }
+.timer.stopped { background: #b00020; }
+.timer.reset { background: var(--timer-left-bg); }
+
+.top-btn.export-csv { background: #2FB7C8; color: #fff; }
+.top-btn.export-csv:hover { filter: brightness(1.1); }
+
+.top-btn.season-highlight { background: #4C99FF; color: #fff; }
+.top-btn.season-highlight:hover { filter: brightness(0.95); }
+
+.top-btn.export-season { background: #1B62E5; color: #fff; }
+.top-btn.export-season:hover { filter: brightness(0.95); }
+
+.top-btn.back-btn { background: #3a3a3a; color: #fff; }
+.top-btn.back-btn:hover { filter: brightness(1.1); }
+
+.import-csv-btn { background: #010741; color: #fff; }
+
+/* Specific Button Colors */
+#selectPlayersBtn { background: #1E2A44; color: #fff; }
+#torbildBtn { background: #22335A; color: #fff; }
+#goalValueBtn { background: #263D70; color: #fff; }
+
+.danger-btn { background: #7F0000; color: #fff; }
+.danger-btn:hover { background: #9F0000; }
+.reset-btn { font-weight: 700; }
+
+/* Player Filter Button Style */
+.player-filter-btn {
+  background: #6b6b6b !important;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  min-width: 140px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  text-align-last: center;
+}
+.player-filter-btn:hover {
+  background: #7b7b7b !important;
+}
+.player-filter-btn option {
+  background: #2b2b2b;
+  color: #fff;
+}
+
+/* Unified Neon Pulse Animation for ALL pulsing buttons */
+/* Uses currentColor to adapt to each button's color */
+/* Applied to: Player Out button, Select Goalie button (active state) */
+@keyframes neon-pulse-sync {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    opacity: 0.85;
+  }
+}
+
+/* Red pulsing animation for goalie button */
+@keyframes neon-pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 5px #ff4444, 0 0 10px #ff4444, 0 0 15px #ff4444;
+  }
+  50% {
+    box-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 30px #ff4444;
+  }
+}
+
+/* Task 3: Pulsing Neon-Glow for Active Goalie Button */
+#goalMapGoalieFilter.active {
+  animation: neon-pulse-red 2s ease-in-out infinite;
+  border: 2px solid #ff4444 !important;
+  color: #ff4444;
+}
+
+/* Pulsing Neon-Glow for Active Player Filter Button */
+#goalMapPlayerFilter.active {
+  animation: neon-pulse-green 2s ease-in-out infinite !important;
+  border: 2px solid #266EFF !important;
+  color: #266EFF !important;
+}
+
+/* Legacy animations removed - using unified neon-pulse-sync for all pulsing elements */
+
+/* Task 6: Goalie Name Overlay in Red Field Area */
+.goalie-name-overlay {
+  position: absolute;
+  bottom: 25%; /* Middle of red area (bottom half) */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.35); /* 35% transparency - more visible */
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 1;
+  letter-spacing: 8px;
+  user-select: none;
+}
+
+/* Task 6: Goalie Name in Goal Area */
+.goalie-name-goal {
+  position: absolute;
+  bottom: 5%; /* In goal area */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: rgba(255, 0, 0, 0.4); /* RED with 40% opacity */
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 2;
+  user-select: none;
+  letter-spacing: 4px;
+}
+
+/* Player Name Overlay in Green Field Area */
+.player-name-overlay {
+  position: absolute;
+  top: 25%; /* Middle of green area (top half) */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(0, 255, 102, 0.15); /* Green with 15% transparency */
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 1;
+  letter-spacing: 8px;
+  user-select: none;
+}
+
+
+.confirm-btn {
+  background: #266EFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition: background 0.2s;
+  display: block;
+  margin: 20px auto;
+  min-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.confirm-btn:hover { background: #1E5AD8; }
+
+#statsScrollContainer { max-height: none; overflow-y: visible; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+
+thead th {
+  background: var(--header-bg);
+  color: #ffffff; /* FIX: Schriftfarbe in Headern immer weiß */
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 8px 6px;
+  border-bottom: 2px solid #333;
+  text-align: center;
+}
+thead th:nth-child(2) { text-align: left; padding-left: 12px; }
+
+th, td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  color: var(--text-color);
+}
+
+.even-row { background-color: var(--row-even); }
+.odd-row  { background-color: var(--row-odd); }
+
+td[data-player] { cursor: pointer; transition: transform 0.08s, background 0.08s; }
+td[data-player]:active { transform: scale(1.12); background: #222; }
+
+th.sortable { user-select: none; }
+th .sort-arrow { font-size: 0.7rem; color: #ddd }
+
+.torbild-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+  height: calc(100vh - 120px);
+  margin-top: 20px;
+}
+.field-column { flex: 1; display: flex; justify-content: center; }
+.field-box, .img-box {
+  background: var(--img-box-bg);
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 5px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Field and image box images */
+.field-box img, .img-box img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain; 
+  border-radius: 8px; 
+}
+/* Goal Map - Aligned with Season Map layout */
+
+#torbildPage .goal-column {
+  display: grid;
+  /* Drei gleich große Reihen für: Grünes Tor, Rotes Tor, Timebox */
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 15px;
+  /* WICHTIG: Height 100% sicherstellen, damit Grid den Container füllt */
+  height: 100%;
+}
+
+#torbildPage .goal-img-box {
+  height: 100%;
+  min-height: 0; /* Wichtig für Firefox/Grid */
+  position: relative;
+}
+
+#torbildPage .goal-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+#torbildPage .time-tracking-box {
+  height: 100%;
+  min-height: 0; /* Wichtig für Firefox/Grid */
+}
+
+.goal-column { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+
+/* Season Map - Same layout structure as Goal Map */
+#seasonMapPage .torbild-layout {
+  height: calc(100vh - 120px);
+  margin-bottom: 32px;  /* Abstand nach unten zur Momentum-Grafik */
+}
+
+/* Season Map: Goal-Spalte auf Grid umstellen, Timebox kleiner */
+#seasonMapPage .goal-column {
+  display: grid;
+  grid-template-rows: 1fr 1fr 0.75fr; /* 2x Tore, kleinerer Anteil Timebox */
+  gap: 15px;
+}
+
+#seasonMapPage .goal-img-box {
+  min-height: 0;
+  position: relative;
+}
+
+/* Timebox: Höhe begrenzen, nicht größer als nötig */
+#seasonMapPage .time-tracking-box {
+  max-height: none !important;
+  min-height: 0;
+  overflow: visible !important;
+  height: auto !important;
+  display: flex;          /* falls nötig, um interne Ausrichtung zu halten */
+  align-items: stretch;
+  visibility: hidden;  /* Hide Time Box in Season Map but keep the space */
+}
+
+/* Mindesthöhe für Torbilder - Goal Map */
+/* Removed - using flex: 1 instead */
+
+/* Bilder EXAKT wie Goal Map */
+#seasonMapPage .img-box {
+  position: relative;
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 0;  /* Allow flex to control size */
+  height: 100%;  /* Volle Höhe nutzen */
+  overflow: hidden; /* Versteckt überstehende Teile */
+}
+
+/* Mindesthöhe für Torbilder - Season Map */
+/* Removed - using flex: 1 instead */
+
+/* Container muss position relative haben für Heatmap */
+#seasonFieldBox {
+  position: relative;
+}
+
+/* Heatmap Canvas für Season Map */
+.heatmap-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+
+/* Marker-Punkte korrekt positionieren */
+#seasonMapPage .marker-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  /* Kleinere Marker für Season Map (8px statt 14px) */
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+/* Marker: ALLE dunkelgrau, scharfer Rand, gleiche Optik für Feld & Tor */
+/* Default: 14px for Goal Map, overridden to 8px for Season Map below */
+.marker-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  box-shadow: 0 0 3px rgba(0,0,0,0.5);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  background-color: #444444;
+}
+
+/* Verhindere Browser-Zoom bei Doppelklick auf interaktive Elemente */
+.goalvalue-table td,
+.goalvalue-table button,
+.stats-table td,
+.season-table td,
+.time-btn,
+button,
+.time-cell,
+.stat-cell,
+[data-stat],
+.lineup-position,
+.player-row {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Touch-Action für alle interaktiven Zellen */
+.stats-table td[data-player][data-cat],
+.season-table td[data-player][data-cat],
+.ice-time-cell,
+.goalvalue-table td,
+.goalvalue-table .gv-data-cell,
+.season-time-cell,
+.goalvalue-table,
+.goalvalue-table th,
+.stats-table td,
+.season-table td,
+.time-btn {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* SOG Total-Zelle: Verhindere Browser-Zoom bei Doppel-Tap */
+.total-cell[data-cat="Shot"] {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Kein Scale-Effekt beim Klicken auf Feld/Tor */
+.field-box:active,
+#field:active {
+  transform: none;
+  transition: none;
+}
+
+/* Timebox-Container Layout Fix */
+.time-tracking-box {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  background: var(--time-box-bg);
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 10px !important;
+  color: var(--time-box-text);
+  font-size: 0.95rem;
+  overflow: hidden !important;
+  overflow-y: auto !important;
+  height: auto;
+  min-height: auto;
+  max-height: none !important;
+  gap: 10px;
+  box-sizing: border-box !important;
+  position: relative;
+}
+
+/* Period-Panel */
+.period {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto minmax(1.4em, auto) auto;
+  align-items: center;
+  justify-items: center;
+  row-gap: 2px;
+  column-gap: 12px;
+  padding: 6px 10px;
+  background: var(--period-bg);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: var(--period-text);
+  box-sizing: border-box !important;
+}
+
+.period-title { grid-column: 1 / -1; font-weight: bold; text-align: center; margin-bottom: 4px; font-size: 0.85rem; }
+.period-buttons.top-row, .period-buttons.bottom-row, .period-numbers { display: contents; }
+.period-numbers span { color: #ccc; font-size: 0.8rem; line-height: 1; }
+
+/* Buttons */
+.time-btn {
+  width: 100%;
+  height: 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+
+/* Farben bleiben */
+.period-buttons.top-row .time-btn { background: var(--btn-top-bg); }
+.period-buttons.bottom-row .time-btn { background: var(--btn-bottom-bg); }
+.period-buttons.top-row .time-btn:hover { background-color: #b2f0b2; }
+.period-buttons.bottom-row .time-btn:hover { background-color: #ffd3d3; }
+.time-btn:active { transform: scale(1.05); }
+
+/* Disabled-State */
+.time-btn[disabled],
+.time-btn.disabled-readonly {
+  opacity: 0.7;
+  cursor: default;
+  pointer-events: none;
+  filter: brightness(0.95);
+}
+
+/* Period Container - explizit positionieren */
+.time-tracking-box .period {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  transform: none !important;
+  top: 0 !important;
+  left: 0 !important;
+  flex-grow: 0 !important;
+}
+
+/* Spielernamen dürfen nicht umbrechen - Bug Fix #3 */
+.stats-table td:nth-child(2),
+.season-table td:nth-child(2),
+.stats-table .player-name,
+.season-table .player-name {
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* FIX: Top-bar Buttons nicht zusammendrücken */
+.top-bar {
+  min-height: 48px;
+}
+
+.top-bar .top-btn {
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+}
+
+#statsPage .top-bar {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ====================== */
+/* SEASON PAGE (Scroll wie Goal Value) */
+/* ====================== */
+
+/* Season Page Layout - Tabelle exakt unter Titel zentrieren */
+#seasonPage {
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: none;
+}
+
+/* When season page is visible, use flex layout */
+#seasonPage:not([style*="display: none"]) {
+  display: flex !important;
+}
+
+#seasonPage h1 {
+  text-align: center !important;
+  width: 100% !important;
+  margin: 12px 0;
+}
+
+#seasonPage .page-top {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#seasonContainer {
+  position: relative;
+  overflow-x: scroll !important;  /* scroll instead of auto = ALWAYS visible */
+  overflow-y: hidden !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  max-width: 1200px;
+  margin: 0 auto;
+  -webkit-overflow-scrolling: touch !important;
+  padding-left: 0; /* CRITICAL: no left padding to prevent gap */
+  padding-right: 20px;
+  padding-bottom: 20px !important;  /* Platz für Scrollbar unter den Tabellen */
+  box-sizing: border-box !important;
+  height: auto;
+  min-height: 0;
+  max-height: calc(100vh - 200px);
+  background: var(--bg-color); /* Opaque background for sticky columns */
+}
+
+#seasonContainer::-webkit-scrollbar {
+  height: 18px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+#seasonContainer::-webkit-scrollbar-thumb {
+  background: #266EFF !important;
+  border-radius: 10px !important;
+  border: 3px solid rgba(0, 0, 0, 0.1) !important;
+}
+#seasonContainer::-webkit-scrollbar-thumb:hover {
+  background: #1E55CC !important;
+}
+#seasonContainer {
+  scrollbar-width: auto !important;
+  scrollbar-color: #266EFF rgba(0, 0, 0, 0.2) !important;
+}
+
+#seasonPage table {
+  width: 100%;
+  margin: 6px auto 10px auto;  /* Tabelle zentrieren */
+  min-width: max-content !important;
+  border-collapse: collapse !important;
+  font-size: 0.95rem !important;
+  display: table !important;
+}
+
+#seasonPage thead th {
+  padding: 6px 4px !important;
+  border-bottom: 2px solid #333;
+  background: var(--header-bg);
+  color: #ffffff; /* FIX */
+  position: sticky;
+  top: 0;
+  text-align: center;
+}
+
+#seasonPage tbody tr:nth-child(odd) { background-color: var(--row-odd); }
+#seasonPage tbody tr:nth-child(even) { background-color: var(--row-even); }
+
+#seasonPage .total-row td {
+  background: var(--header-bg) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-top: 2px solid #333;
+}
+
+/* leichte Entkopplung vom Scrollbalken */
+.table-scroll { 
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* ========================================= */
+/* ========================================= */
+/* SEASON TABLE - FINAL FIX */
+/* ========================================= */
+
+#seasonContainer {
+  position: relative;
+  overflow: auto !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+  max-height: calc(100vh - 200px);
+  background: var(--bg-color);
+}
+
+/* Grüner horizontaler Scrollbar */
+#seasonContainer::-webkit-scrollbar {
+  height: 16px;
+  background: rgba(0, 0, 0, 0.25);
+}
+#seasonContainer::-webkit-scrollbar-thumb {
+  background: #266EFF;
+  border-radius: 8px;
+}
+#seasonContainer::-webkit-scrollbar-thumb:hover {
+  background: #1E55CC;
+}
+#seasonContainer {
+  scrollbar-width: auto;
+  scrollbar-color: #266EFF rgba(0, 0, 0, 0.25);
+}
+
+/* Season Table Wrapper - ermöglicht sticky für fixed-columns */
+.season-table-wrapper {
+  display: flex !important;
+  gap: 0 !important;
+  width: max-content;
+  min-width: 100%;
+  align-items: flex-start;
+  position: relative;
+}
+
+/* Fixed Columns - HÖHERER z-index damit rechte Tabelle nicht überdeckt */
+.fixed-columns {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 100 !important;  /* HÖHER als die scrollable-columns! */
+  background: var(--bg-color) !important;  /* Opaque Hintergrund wichtig! */
+  flex-shrink: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Scrollable Columns - niedrigerer z-index */
+.scrollable-columns {
+  flex: 1;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0;
+  z-index: 1 !important;
+}
+
+/* Table Scroll Container - kein overflow, da #seasonContainer scrollt */
+.table-scroll {
+  width: 100%;
+}
+
+/* Beide Tabellen - identisches Styling */
+.season-table-fixed,
+.season-table-scroll {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Zellen */
+.season-table-fixed th,
+.season-table-fixed td,
+.season-table-scroll th,
+.season-table-scroll td {
+  padding: 8px 12px;
+  white-space: nowrap;
+  border-bottom: 1px solid #333;
+  line-height: 1.2;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Header - sticky oben */
+.season-table-fixed thead th,
+.season-table-scroll thead th {
+  background: var(--header-bg) !important;
+  color: #fff !important;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 44px;
+  vertical-align: middle;
+}
+
+/* Fixed table headers need higher z-index to stay above sticky body columns */
+.season-table-fixed thead th {
+  z-index: 110 !important;  /* Höher als fixed-columns selbst */
+  background: var(--header-bg) !important;
+}
+
+/* Scrollable table headers - niedrigerer z-index */
+.season-table-scroll thead th {
+  z-index: 30 !important;  /* Niedriger als fixed-columns header */
+}
+
+/* Body-Zeilen - exakt gleiche Höhe */
+.season-table-fixed tbody tr,
+.season-table-scroll tbody tr {
+  height: 40px;
+}
+
+.season-table-fixed tbody td,
+.season-table-scroll tbody td {
+  height: 40px;
+  vertical-align: middle;
+}
+
+/* ZEILEN-FARBEN - EXAKT WIE GAME DATA */
+.season-table-fixed tbody tr.even-row td,
+.season-table-scroll tbody tr.even-row td {
+  background-color: #333333 !important;
+}
+
+.season-table-fixed tbody tr.odd-row td,
+.season-table-scroll tbody tr.odd-row td {
+  background-color: #4a4a4a !important;
+}
+
+/* Light Mode */
+[data-theme="light"] .season-table-fixed tbody tr.even-row td,
+[data-theme="light"] .season-table-scroll tbody tr.even-row td {
+  background-color: #f7f7f7 !important;
+}
+
+[data-theme="light"] .season-table-fixed tbody tr.odd-row td,
+[data-theme="light"] .season-table-scroll tbody tr.odd-row td {
+  background-color: #ededed !important;
+}
+
+/* TOTAL-ZEILE - sticky unten, BEIDE Tabellen */
+.season-table-fixed tfoot,
+.season-table-scroll tfoot {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+}
+
+/* Total-Zeile (tfoot) in fixed-columns höherer z-index */
+.season-table-fixed tfoot {
+  z-index: 110 !important;
+}
+
+/* Scrollable table tfoot - niedrigerer z-index */
+.season-table-scroll tfoot {
+  z-index: 20 !important;  /* Niedriger als fixed-columns tfoot */
+}
+
+.season-table-fixed .total-row td,
+.season-table-scroll .total-row td {
+  background: var(--header-bg) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-top: 2px solid #555;
+  height: 44px;
+}
+
+.season-table-fixed tfoot td {
+  z-index: 110 !important;
+  background: var(--header-bg) !important;
+}
+
+/* Player column left-aligned */
+.season-table-fixed td:nth-child(2),
+.season-table-fixed th:nth-child(2) {
+  text-align: left;
+  padding-left: 12px;
+}
+
+/* Scrollable table vertical scrollbar (rechts) */
+.scrollable-columns::-webkit-scrollbar {
+  width: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.scrollable-columns::-webkit-scrollbar-thumb {
+  background: #266EFF;
+  border-radius: 6px;
+}
+
+/* Synchronized vertical scroll - beide Container gleiche Höhe */
+.fixed-columns,
+.scrollable-columns {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+}
+
+/* Fixed columns versteckter vertikaler Scrollbar */
+.fixed-columns::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+.fixed-columns {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* ============ */
+/* GOAL VALUE PAGE */
+/* ============ */
+
+#goalValuePage {
+  width: 100%;
+  max-width: none;
+}
+
+/* Goal Value Container */
+#goalValueContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: var(--bg-color);
+}
+
+/* Scroll-Wrapper für die gesamte Tabelle */
+.goal-value-scroll-wrapper {
+  width: 100%;
+  max-height: 75vh;
+  overflow: auto;  /* Beide Richtungen */
+  background: var(--bg-color);
+}
+
+/* EINE Tabelle */
+.goal-value-table {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 0.95rem;  /* EXAKT wie Season Tabelle */
+}
+
+.goal-value-table th,
+.goal-value-table td {
+  padding: 8px 12px;
+  white-space: nowrap;
+  text-align: center;
+  border-bottom: none;  /* Keine Linien zwischen Zeilen */
+  border-top: none;  /* Keine oberen Linien */
+}
+
+/* Sticky Player-Spalte (erste Spalte) */
+.goal-value-table .sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: var(--bg-color);
+  text-align: left;
+  min-width: 150px;
+}
+
+/* Header sticky (oben) */
+.goal-value-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: var(--header-bg);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.95rem;  /* EXAKT wie Season */
+  border-bottom: 2px solid #333;  /* Header behält Linie */
+}
+
+/* Player Header: sticky links UND oben */
+.goal-value-table thead th.sticky-col {
+  z-index: 25;  /* Höchster z-index: links + oben sticky */
+  left: 0;
+  top: 0;
+  background: var(--header-bg);  /* Gleiche Farbe für ALLE Header */
+  font-size: 0.95rem;  /* EXAKT wie Season */
+  font-weight: 700;
+}
+
+/* Row colors */
+.goal-value-table tbody tr.even-row td {
+  background-color: var(--row-even);
+}
+
+.goal-value-table tbody tr.odd-row td {
+  background-color: var(--row-odd);
+}
+
+/* Sticky column keeps row color */
+.goal-value-table tbody tr.even-row td.sticky-col {
+  background-color: var(--row-even);
+  font-weight: 700;  /* Spielernamen FETT */
+}
+
+.goal-value-table tbody tr.odd-row td.sticky-col {
+  background-color: var(--row-odd);
+  font-weight: 700;  /* Spielernamen FETT */
+}
+
+/* Bottom/Total Zeile */
+.goal-value-table .bottom-row td {
+  background: var(--header-bg) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-top: 2px solid #555;
+}
+
+.goal-value-table .bottom-row td.sticky-col {
+  background: var(--header-bg) !important;
+}
+
+/* Scrollbar GRÜN */
+.goal-value-scroll-wrapper::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.goal-value-scroll-wrapper::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.goal-value-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #266EFF;
+  border-radius: 5px;
+}
+
+.goal-value-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #1E55CC;
+}
+
+/* Firefox */
+.goal-value-scroll-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #266EFF #1a1a1a;
+}
+
+/* ============================================= */
+/* GOAL VALUE - NO LINES BETWEEN NAMES          */
+/* ============================================= */
+
+/* Table cells - NO borders */
+.goal-value-table td,
+.goal-value-table tbody td,
+.goal-value-table tbody tr td,
+.goal-value-table tbody td.sticky-col {
+  border: none !important;
+}
+
+/* Table rows - NO borders */
+.goal-value-table tr,
+.goal-value-table tbody tr {
+  border: none !important;
+}
+
+/* Also for .goalvalue-table if used */
+.goalvalue-table td,
+.goalvalue-table tbody td,
+.goalvalue-table tbody tr td {
+  border: none !important;
+}
+
+.goalvalue-table tr,
+.goalvalue-table tbody tr {
+  border: none !important;
+}
+
+/* Remove any box-shadow that looks like lines */
+.goal-value-table td,
+.goal-value-table tr,
+.goalvalue-table td,
+.goalvalue-table tr {
+  box-shadow: none !important;
+}
+
+/* Only header and bottom keep lines */
+.goal-value-table thead th {
+  border-bottom: 2px solid #333 !important;  /* Header keeps upper line */
+}
+
+.goal-value-table .bottom-row td {
+  border-top: 2px solid #555 !important;  /* Bottom keeps upper line */
+}
+
+.goalvalue-table thead th {
+  border-bottom: 2px solid #333 !important;  /* Header keeps upper line */
+}
+
+/* ============================================= */
+/* GOAL VALUE - FONT LIKE SEASON TABLE          */
+/* ============================================= */
+
+/* Font size like Season (0.95rem) */
+.goal-value-table,
+.goalvalue-table {
+  font-size: 0.95rem !important;
+}
+
+/* Player names BOLD */
+.goal-value-table tbody td.sticky-col,
+.goal-value-table tbody td:first-child,
+.goalvalue-table tbody td:first-child,
+.goalvalue-table tbody td.sticky-col {
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+}
+
+/* Headers also adjust */
+.goal-value-table thead th,
+.goalvalue-table thead th {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+}
+
+.goalvalue-table {
+  width: auto !important;
+  min-width: max-content !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.95rem;  /* EXAKT wie Season Tabelle */
+  margin-top: 6px;
+  margin-bottom: 10px;
+  table-layout: fixed;
+  display: table !important;
+}
+
+.goalvalue-table tbody tr:nth-child(odd) { background: var(--row-odd); }
+.goalvalue-table tbody tr:nth-child(even) { background: var(--row-even); }
+.goalvalue-table tbody tr:hover { background: inherit !important; }
+
+.goalvalue-table th {
+  padding: 6px 4px !important;
+  border-bottom: 2px solid #333;
+  background: var(--header-bg) !important;
+  color: #fff !important;
+  font-size: 0.95rem;  /* EXAKT wie Season */
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.goalvalue-table td {
+  padding: 6px 4px !important;
+  text-align: center;
+  border-bottom: none;  /* Linien zwischen Spielernamen entfernen */
+  border-top: none;  /* Keine oberen Linien */
+}
+
+/* STICKY COLUMNS FOR GOAL VALUE TABLE */
+.goalvalue-table .sticky-col {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 25 !important;
+  background: var(--header-bg) !important;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.goalvalue-table thead th.sticky-col {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 35 !important;
+  background: var(--header-bg) !important;
+  color: #fff !important;
+  font-size: 0.95rem;  /* EXAKT wie Season */
+  font-weight: 700;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+.goalvalue-table tbody td.sticky-col {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 20 !important;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 700;  /* Spielernamen FETT */
+}
+
+/* Gerade Zeilen (even) */
+.goalvalue-table tbody tr:nth-child(even) td.sticky-col {
+  background: var(--row-even) !important;
+  font-weight: 700;  /* Spielernamen FETT */
+}
+
+/* Ungerade Zeilen (odd) */
+.goalvalue-table tbody tr:nth-child(odd) td.sticky-col {
+  background: var(--row-odd) !important;
+  font-weight: 700;  /* Spielernamen FETT */
+}
+
+/* Bottom row (letzte Zeile mit Dropdowns) */
+.goalvalue-table tbody tr:last-child td.sticky-col {
+  background: rgba(0,0,0,0.03) !important;
+  border-top: 2px solid #333 !important;
+}
+
+/* Name-Spalte in Goal Value explizit wie Season-Table */
+.goalvalue-table thead th.gv-name-header.sticky-col {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 50 !important;
+  background: var(--header-bg) !important;
+}
+
+.goalvalue-table tbody td.gv-name-cell.sticky-col {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 40 !important;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .goalvalue-table .sticky-col {
+  box-shadow: 2px 0 4px rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .goalvalue-table thead th.sticky-col {
+  box-shadow: 2px 0 4px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Name Zellen */
+.gv-name-cell {
+  text-align: left !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-weight: 700 !important;
+}
+.gv-name-header {
+  text-align: left !important;
+  padding-left: 12px !important;
+  background: var(--header-bg) !important;
+  color: #fff !important;
+}
+
+.gv-bottom-label {
+  text-align: left !important;
+  padding-left: 12px !important;
+  background: var(--bg-color) !important;
+  border-top: 2px solid #555 !important;
+}
+
+.gv-data-cell {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, background 0.08s;
+}
+
+.gv-data-cell:active {
+  transform: scale(1.08);
+  background: rgba(68, 187, 145, 0.2);
+}
+
+.gv-value-cell { 
+  font-weight: 700;
+  min-width: 80px;
+}
+
+.goalvalue-title-input {
+  background: var(--header-bg) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  border-radius: 6px !important;
+  padding: 6px 8px !important;
+  color: #fff !important;
+  text-align: center !important;
+  max-width: 100px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  font-size: 0.8em !important;  /* Kleinere Schrift für Opponent-Header */
+  font-weight: 600 !important;
+}
+.goalvalue-title-input:focus {
+  outline: 2px solid #266EFF !important;
+  background: #2a2a2a !important;
+}
+
+.gv-scale-dropdown {
+  width: 75px !important;
+  padding: 8px 6px !important;
+  border-radius: 6px !important;
+  border: 2px solid rgba(255,255,255,0.2) !important;
+  background: var(--header-bg) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  font-size: 0.95rem !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 12px !important;
+  padding-right: 26px !important;
+}
+.gv-scale-dropdown:hover {
+  background-color: #2a2a2a !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+.gv-scale-dropdown:focus {
+  outline: 2px solid #266EFF !important;
+  border-color: #266EFF !important;
+}
+.gv-scale-dropdown option {
+  background: #1a1a1a !important;
+  color: #fff !important;
+  padding: 10px !important;
+}
+
+.inline-editor {
+  padding: 4px 6px;
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  width: 64px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#seasonMapMomentumContainer {
+  width: 100%;
+  max-width: 1100px;
+  margin: 12px auto 0 auto;
+  border-radius: 8px;
+  background: transparent;
+  box-sizing: border-box;
+  padding: 2px 6px 6px 6px;
+}
+#seasonMapMomentumContainer svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+#seasonMapMomentumContainer text {
+  dominant-baseline: middle;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 11px;
+}
+
+/* Removed problematic desktop media query that was breaking 1:1:1 proportions */
+/* All boxes now use flex: 1 for consistent sizing across all screen sizes */
+
+@media (max-width: 900px) {
+  .torbild-layout { flex-direction: column; height: auto; }
+  .goalvalue-title-input { font-size: 0.85rem; }
+  .top-bar { gap: 6px; }
+  .top-btn, .import-csv-btn { min-width: 120px; }
+}
+
+/* ==================== */
+/* TABLET MODE FIX: 901px - 1024px */
+/* ==================== */
+/* Fix for Goal Map layout in tablet mode:
+   - Goal images (Tor-Bilder) get proper spacing and are not squeezed
+   - Playing field fills container to ensure marker dots stay within boundaries
+   - Percentage positioning of markers works correctly
+*/
+@media (min-width: 901px) and (max-width: 1024px) {
+  /* Override 900px breakpoint: maintain horizontal layout for Goal Map and Season Map in tablet mode */
+  #torbildPage .torbild-layout,
+  #seasonMapPage .torbild-layout {
+    flex-direction: row;
+    height: auto;
+    min-height: 600px;
+    max-height: 90vh;
+    align-items: stretch;
+  }
+  
+  /* Field column: Balanced with goal column */
+  #torbildPage .field-column,
+  #seasonMapPage .field-column {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* Goal column: Balanced with field column */
+  #torbildPage .goal-column,
+  #seasonMapPage .goal-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 15px;
+  }
+  
+  /* Time tracking box: Use flex from base CSS (1) */
+  #torbildPage .time-tracking-box,
+  #seasonMapPage .time-tracking-box {
+    flex: 1;
+    min-height: 0;
+    overflow: visible !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ==================== */
+/* DESKTOP MODE: > 1024px */
+/* ==================== */
+/* Desktop-specific layout fixes to ensure proper sizing of field and goal images */
+@media (min-width: 1025px) {
+  /* Main layout: Use auto height with constraints for consistency at all zoom levels */
+  #torbildPage .torbild-layout,
+  #seasonMapPage .torbild-layout {
+    height: auto;
+    min-height: 600px;
+    max-height: 90vh;
+    align-items: stretch;
+  }
+  
+  /* Field column: Balanced with goal column */
+  #torbildPage .field-column,
+  #seasonMapPage .field-column {
+    flex: 1;  /* 50% of horizontal space */
+    min-width: 0;
+  }
+  
+  /* Goal column: Balanced with field column */
+  #torbildPage .goal-column,
+  #seasonMapPage .goal-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;  /* 50% of horizontal space */
+    min-width: 0;
+    gap: 15px;
+  }
+  
+  /* Time tracking box: Use flex from base CSS (1) for equal space */
+  #torbildPage .time-tracking-box,
+  #seasonMapPage .time-tracking-box {
+    flex: 1;
+    min-height: 0;
+    overflow: visible !important;
+    overflow-y: auto !important;
+  }
+}
+
+#statsPage .total-row td {
+  background: var(--header-bg) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-top: 2px solid #333;
+}
+
+#goalValuePage .goalvalue-table tbody tr:last-child td {
+  background: var(--header-bg) !important;
+  color: var(--text-color) !important;
+  font-weight: 700 !important;
+  border-top: 2px solid #333;
+}
+
+/* --- Season Table Fix: eigenständige Klasse & Scroll-Konsistenz --- */
+
+.season-table {
+  table-layout: fixed !important;
+  width: 100%;
+  border-collapse: separate !important; /* CRITICAL: prevents bleeding */
+  border-spacing: 0 !important;
+  margin: 6px auto 10px auto;
+  min-width: max-content;
+  font-size: 0.95rem;
+  display: table;
+}
+
+.season-table th,
+.season-table td {
+  white-space: nowrap;
+  padding: 6px 6px;
+  /* Background colors handled by row striping and header rules */
+}
+
+/* Sticky Spalten - Text kürzen wenn zu lang */
+.season-table :is(th, td):nth-child(1),
+.season-table :is(th, td):nth-child(2),
+.season-table :is(th, td):nth-child(3) {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Header oben sticky */
+.season-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20; /* Higher z-index above all body cells */
+  background: var(--header-bg); /* Opaque header background */
+  color: #fff;
+  border-bottom: 2px solid #333;
+  text-align: center;
+  font-weight: 700;
+}
+
+.season-table tbody td {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+.season-table tbody tr:nth-child(odd) { background: var(--row-odd); }
+.season-table tbody tr:nth-child(even) { background: var(--row-even); }
+
+/* Nr Column (1st) - Header UND Body */
+.season-table :is(th, td):nth-child(1) {
+  width: var(--w-nr) !important;
+  min-width: var(--w-nr) !important;
+  max-width: var(--w-nr) !important;
+  position: sticky !important;
+  left: 0 !important; /* Exactly at left edge */
+  z-index: 15 !important; /* Above scrolling cells */
+  box-shadow: 2px 0 0 rgba(0,0,0,0.3); /* Visual separation */
+}
+
+/* Player Column (2nd) - Header UND Body */
+.season-table :is(th, td):nth-child(2) {
+  width: var(--w-player) !important;
+  min-width: var(--w-player) !important;
+  max-width: var(--w-player) !important;
+  position: sticky !important;
+  left: var(--w-nr) !important; /* Directly calculated from first column width */
+  z-index: 15 !important; /* Above scrolling cells */
+  box-shadow: 2px 0 0 rgba(0,0,0,0.3); /* Visual separation */
+  text-align: left;
+  padding-left: 12px;
+}
+
+/* Pos Column (3rd) - Header UND Body */
+.season-table :is(th, td):nth-child(3) {
+  width: var(--w-pos) !important;
+  min-width: var(--w-pos) !important;
+  max-width: var(--w-pos) !important;
+  position: sticky !important;
+  left: calc(var(--w-nr) + var(--w-player)) !important; /* Sum of first two columns */
+  z-index: 15 !important; /* Above scrolling cells */
+  /* Schatten für nahtlosen Übergang */
+  box-shadow: inset -6px 0 8px -6px rgba(0,0,0,0.5);
+}
+
+/* Header der ersten drei Spalten ÜBER Body-Zellen legen */
+.season-table thead th:nth-child(-n+3) {
+  z-index: 25 !important; /* HIGHEST - above body sticky columns */
+  background: var(--header-bg);
+}
+
+.season-table thead th:nth-child(2) {
+  text-align: left;
+  padding-left: 12px;
+  font-weight: 700;
+}
+
+/* Ungerade Zeilen - sticky columns with !important */
+.season-table tbody tr:nth-child(odd) td:nth-child(1),
+.season-table tbody tr:nth-child(odd) td:nth-child(2),
+.season-table tbody tr:nth-child(odd) td:nth-child(3) {
+  background: var(--row-odd) !important;
+}
+
+/* Gerade Zeilen - sticky columns with !important */
+.season-table tbody tr:nth-child(even) td:nth-child(1),
+.season-table tbody tr:nth-child(even) td:nth-child(2),
+.season-table tbody tr:nth-child(even) td:nth-child(3) {
+  background: var(--row-even) !important;
+}
+
+/* Total-Zeile */
+.season-table .total-row td:nth-child(1),
+.season-table .total-row td:nth-child(2),
+.season-table .total-row td:nth-child(3) {
+  background: var(--header-bg) !important;
+  position: sticky;
+  z-index: 15;
+}
+
+.season-table .total-row td:nth-child(1) {
+  left: 0;
+}
+
+.season-table .total-row td:nth-child(2) {
+  left: var(--w-nr, 60px);
+}
+
+.season-table .total-row td:nth-child(3) {
+  left: calc(var(--w-nr, 60px) + var(--w-player, 140px));
+}
+
+/* Box shadow handled in sticky column definitions above (lines 1260, 1274, 1293) - removed duplicate */
+
+.season-table thead th:last-child,
+.season-table tbody td:last-child {
+  min-width: 80px;
+  padding-right: 12px;
+}
+
+.season-table .total-row td {
+  background: var(--header-bg);
+  color: #ffffff;
+  font-weight: 700;
+  border-top: 2px solid #333;
+  padding: 8px 6px;
+}
+
+/* Position Column Styles */
+.season-table .pos-header {
+  background: var(--header-bg) !important;
+  color: #fff;
+  padding: 6px;
+  text-align: center;
+  cursor: default;
+}
+
+/* Pos Filter Dropdown - GRÜN wie vorher */
+.season-table .pos-filter,
+.pos-filter,
+#positionFilter {
+  width: 100%;
+  padding: 4px 8px;
+  background: #266EFF !important;
+  color: #fff !important;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  text-align-last: center;
+}
+
+.season-table .pos-filter:hover,
+.pos-filter:hover,
+#positionFilter:hover {
+  background: #1E5AD8 !important;
+}
+
+.season-table .pos-filter:focus,
+.pos-filter:focus,
+#positionFilter:focus {
+  background: #1E5AD8 !important;
+}
+
+.season-table .pos-filter option,
+.pos-filter option,
+#positionFilter option {
+  background: #2b2b2b;
+  color: #fff;
+}
+
+.season-table .pos-cell {
+  text-align: center;
+  font-weight: 600;
+  min-width: 70px;
+}
+
+/* ==================== */
+/* TEAM SELECTION STYLES */
+/* ==================== */
+
+.team-selection-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.team-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.team-slot {
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color 0.3s ease;
+  margin-bottom: 16px;
+}
+
+/* Green bar highlighting removed as requested */
+.team-slot:hover {
+  border-color: #333;
+}
+
+.team-display h3 {
+  margin: 0 0 8px 0;
+  color: #266EFF;
+  font-size: 1.2rem;
+}
+
+.team-name {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.team-btn {
+  background: #266EFF;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+.team-btn:hover {
+  background: #1E5AD8;
+}
+
+.team-btn.active-team {
+  background: #2a2a2a;
+  border: 2px solid #266EFF;
+  color: #266EFF;
+  padding: 10px 22px;
+}
+
+.team-btn.active-team:hover {
+  background: #333;
+  border-color: #1E5AD8;
+}
+
+/* ── Backup Buttons (Team Selection Page) ── */
+.backup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px auto 12px auto;
+  max-width: 600px;
+  flex-wrap: wrap;
+}
+
+.backup-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e3fba7;
+  color: #000;
+  transition: opacity 0.2s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.backup-btn:active {
+  opacity: 0.7;
+}
+
+/* ----------------------------------------------------- */
+/* Legacy-/Momentum-Marker ausblenden                    */
+/* ----------------------------------------------------- */
+.goal-marker {
+  display: none !important;
+}
+
+/* HARDCODE: Goal Value Namensspalte immer links fixiert */
+#goalValueContainer {
+  position: relative !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+/* Header-Zelle "Spieler" links kleben */
+#goalValueContainer table.goalvalue-table thead th.gv-name-header {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 100 !important;
+  font-size: 0.95rem !important;  /* EXAKT wie Season */
+  font-weight: 700 !important;
+}
+
+/* Spieler-Zellen links kleben */
+#goalValueContainer table.goalvalue-table tbody td.gv-name-cell {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 90 !important;
+  font-weight: 700 !important;  /* Spielernamen FETT */
+}
+
+/* ========================================= */
+/* EXPLICIT STICKY COLUMN BACKGROUNDS        */
+/* ========================================= */
+
+/* EXPLIZITE Hintergrundfarben für Goal Value Table Light Mode */
+.goalvalue-table tbody tr:nth-child(even) td.sticky-col {
+  background-color: #f0f0f0 !important;
+  font-weight: 700 !important;  /* Spielernamen FETT */
+}
+
+.goalvalue-table tbody tr:nth-child(odd) td.sticky-col {
+  background-color: #e0e0e0 !important;
+  font-weight: 700 !important;  /* Spielernamen FETT */
+}
+
+/* EXPLIZITE Hintergrundfarben für Goal Value Table Dark Mode */
+[data-theme="dark"] .goalvalue-table tbody tr:nth-child(even) td.sticky-col {
+  background-color: #333333 !important;
+  font-weight: 700 !important;  /* Spielernamen FETT */
+}
+
+[data-theme="dark"] .goalvalue-table tbody tr:nth-child(odd) td.sticky-col {
+  background-color: #4a4a4a !important;
+  font-weight: 700 !important;  /* Spielernamen FETT */
+}
+
+/* Bottom row (letzte Zeile mit Dropdowns) */
+.goalvalue-table tbody tr:last-child td.sticky-col {
+  background-color: #1E1E1E !important;
+  border-top: 2px solid #333 !important;
+}
+
+[data-theme="dark"] .goalvalue-table tbody tr:last-child td.sticky-col {
+  background-color: #1E1E1E !important;
+}
+
+/* Box shadow improvements for Dark Mode */
+[data-theme="dark"] .goalvalue-table .sticky-col {
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .goalvalue-table thead th.sticky-col {
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ==================== */
+/* EDIT TEAM BUTTON     */
+/* ==================== */
+
+.edit-team-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #aaa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.edit-team-btn:hover {
+  border-color: #266EFF;
+  color: #266EFF;
+}
+
+.team-button-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==================== */
+/* TEAM EDIT MODAL      */
+/* ==================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid #333;
+  min-width: 300px;
+  max-width: 90%;
+}
+
+.modal-content h2 {
+  color: #fff;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content input[type="text"]:focus {
+  outline: none;
+  border-color: #266EFF;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.modal-buttons .save-btn {
+  background: #266EFF;
+  color: white;
+}
+
+.modal-buttons .save-btn:hover {
+  background: #1E5AD8;
+}
+
+.modal-buttons .cancel-btn {
+  background: #444;
+  color: #fff;
+}
+
+.modal-buttons .cancel-btn:hover {
+  background: #555;
+}
+
+.modal-buttons .confirm-btn {
+  background: #266EFF;
+  color: white;
+}
+
+.modal-buttons .confirm-btn:hover {
+  background: #1E5AD8;
+}
+
+/* Goalie Selection Modal */
+
+/* ==================== */
+/* WORKFLOW STATUS      */
+/* ==================== */
+
+#workflowStatusIndicator {
+  display: none;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #266EFF;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin: 10px auto;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(68, 187, 145, 0.2);
+}
+
+#workflowStatusText {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+#workflowStatusText strong {
+  color: #266EFF;
+}
+
+/* ==================== */
+/* GOAL AREA LABELS     */
+/* ==================== */
+
+.goal-area-label {
+  position: absolute;
+  pointer-events: none;
+  font-weight: 800;
+  opacity: 0.45;
+  font-size: 36px;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.06);
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* ==================== */
+/* DRAG HANDLE STYLES   */
+/* ==================== */
+
+.drag-handle {
+  color: #4C99FF;
+  margin-right: 8px;
+  cursor: grab;
+  font-size: 1.2rem;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+tr[data-player].dragging {
+  background: rgba(68, 187, 145, 0.3) !important;
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+/* ==================== */
+/* PLAYER SELECTION PAGE - Neues Layout */
+/* ==================== */
+
+#playerSelectionPage .player-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+#playerSelectionPage .player-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 8px 0;
+}
+
+/* Checkbox */
+#playerSelectionPage .player-list input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #266EFF;
+  flex-shrink: 0;
+}
+
+/* Nr. Input - minimal für 2-stellige Zahlen */
+#playerSelectionPage .player-list .num-input {
+  width: 45px;
+  min-width: 45px;
+  max-width: 45px;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 0.95rem;
+  flex: 0 0 45px;
+}
+
+#playerSelectionPage .player-list .num-input::placeholder {
+  color: #666;
+}
+
+/* Name Input - füllt den Rest */
+#playerSelectionPage .player-list .name-input {
+  flex: 1;
+  min-width: 0;
+  background: #3a3a3a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 0.95rem;
+}
+
+#playerSelectionPage .player-list .name-input::placeholder {
+  color: #888;
+}
+
+/* Position Select - minimal für "Defense" */
+#playerSelectionPage .player-list .pos-select {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  background: #2a2a2a;
+  color: #266EFF;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: bold;
+  flex: 0 0 60px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+#playerSelectionPage .player-list .pos-select:focus {
+  outline: none;
+  border-color: #266EFF;
+}
+
+/* Placeholder Farbe wenn nichts ausgewählt */
+#playerSelectionPage .player-list .pos-select:invalid,
+#playerSelectionPage .player-list .pos-select option[value=""] {
+  color: #666;
+}
+
+/* Ausgewählte Option in grün */
+#playerSelectionPage .player-list .pos-select:valid {
+  color: #266EFF;
+}
+
+#playerSelectionPage .player-list .pos-select option {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+#playerSelectionPage .player-list .pos-select option:disabled {
+  color: #666;
+}
+
+/* Goalie Slots - Green Border */
+#playerSelectionPage .player-list li.goalie-slot {
+  border: 0.15px solid #266EFF;  /* Blue border for branding */
+}
+
+/* Player Slots (non-goalie) - Gray Border */
+#playerSelectionPage .player-list li:not(.goalie-slot) {
+  border: 0.15px solid #888888;
+}
+
+/* Fixed Position "G" for Goalies */
+#playerSelectionPage .player-list .pos-fixed {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  background: #2a2a2a;
+  color: #266EFF;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px 6px;  /* Same padding as .pos-select for consistent height */
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: bold;
+  flex: 0 0 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;  /* Match .pos-select box-sizing for consistent width */
+}
+
+/* Top Bar Buttons */
+#playerSelectionPage .top-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#playerSelectionPage .top-btn.back-btn {
+  background: #2b2b2b;
+  color: #fff;
+}
+
+#playerSelectionPage .top-btn.game-data-btn {
+  background: #2D73C6;
+  color: #fff;
+}
+
+#playerSelectionPage .top-btn.game-data-btn:hover {
+  background: #2563A8;
+}
+
+#playerSelectionPage .top-btn.lineup-btn {
+  background: #00B9FF;
+  color: #fff;
+}
+
+/* Titel */
+#playerSelectionPage h1 {
+  text-align: center;
+  color: #266EFF;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+/* Untertitel */
+#playerSelectionPage .subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+/* ==================== */
+/* LINE UP PAGE STYLES  */
+/* ==================== */
+
+#lineUpPage {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+#lineUpPage .page-top {
+  margin-bottom: 10px;
+}
+
+#lineUpPage .top-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: visible !important;
+}
+
+/* Header Buttons */
+#lineUpPage .top-btn {
+  min-width: 120px;
+}
+
+/* Change Line Button (merged Team Line + Power Line) - same color as Export Season */
+.lineup-change-line-btn {
+  background: #00B9FF;
+  color: #fff;
+}
+
+.lineup-change-line-btn:hover {
+  filter: brightness(0.9);
+}
+
+/* Game Center Button on Line Up Page */
+#lineUpPage .top-btn.game-data-btn {
+  background: #2D73C6;
+  color: #fff;
+}
+
+#lineUpPage .top-btn.game-data-btn:hover {
+  background: #2563A8;
+}
+
+/* Player Out Button */
+.lineup-player-out-btn {
+  background: #FF0000 !important;
+  color: #fff;
+  position: relative;
+}
+
+.lineup-player-out-btn:hover {
+  background: #CC0000 !important;
+}
+
+/* Pulsier-Animation */
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+/* Button wenn Spieler OUT sind */
+#lineUpPage .lineup-player-out-btn.has-players-out {
+  background: #FF0000 !important;
+  animation: pulse-red 1.5s infinite;
+}
+
+.player-out-dot {
+  display: none;
+}
+
+/* Export PDF Button - same color as Download buttons */
+.lineup-export-pdf-btn {
+  background: #2FB7C8 !important;
+  color: #fff;
+}
+
+.lineup-export-pdf-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Player Out Dropdown Container */
+#lineUpPage .player-out-container {
+  position: relative;
+  display: inline-block;
+  z-index: 100;
+}
+
+/* Player Out Dropdown List */
+#lineUpPage .player-out-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  background: #2a2a2a;
+  border: 2px solid #444;
+  border-radius: 10px;
+  min-width: 220px;
+  max-height: 350px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  margin-top: 4px;
+}
+
+#lineUpPage .player-out-dropdown.open {
+  display: block;
+}
+
+/* Player Out Item */
+#lineUpPage .player-out-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #333;
+  color: #fff;
+}
+
+#lineUpPage .player-out-item:last-child {
+  border-bottom: none;
+}
+
+#lineUpPage .player-out-item:hover {
+  background: #3a3a3a;
+}
+
+/* OUT Status - RED background */
+#lineUpPage .player-out-item.is-out {
+  background: #cc3333;
+  color: #fff;
+  text-decoration: line-through;
+}
+
+#lineUpPage .player-out-item.is-out:hover {
+  background: #aa2222;
+}
+
+/* Title */
+.lineup-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #266EFF;
+  margin: 10px 0 5px 0;
+  background: linear-gradient(135deg, #266EFF 0%, #00bcd4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#lineUpPage .lineup-mode-label {
+  text-align: center;
+  color: #266EFF;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.lineup-stats {
+  text-align: center;
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+/* Container */
+#lineUpContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Sections */
+.lineup-section {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.lineup-section-title {
+  color: #00bcd4;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  text-align: center;
+}
+
+/* Box Play and Power Play Label colors are set dynamically via line-up.js updateModeColors() */
+
+/* Forward Lines */
+.lineup-forwards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.lineup-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.lineup-line-row {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.lineup-line-stats {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* Position Buttons */
+.lineup-position {
+  background: #4a4a4a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  height: 36px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lineup-position:hover {
+  background: #5a5a5a;
+  transform: translateY(-2px);
+}
+
+.lineup-position.assigned {
+  background: #0074FF;
+  border: 1px solid #00B9FF;
+}
+
+.lineup-position.lineup-center {
+  background: #4a4a4a !important;
+  border: none !important;
+}
+
+.lineup-position.lineup-center:hover {
+  background: #5a5a5a !important;
+}
+
+.lineup-position.lineup-center.assigned {
+  background: #0074FF !important;
+  border: 1px solid #00B9FF !important;
+}
+
+/* Spieler-Name in der Zelle */
+#lineUpPage .position-slot .player-name {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Defense Section */
+.lineup-defense {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lineup-defense-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.lineup-pair-stats {
+  color: #888;
+  font-size: 0.85rem;
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Special Teams */
+.lineup-special-teams {
+  display: flex;
+  gap: 20px;
+}
+
+.lineup-boxplay,
+.lineup-powerplay {
+  flex: 1;
+}
+
+.lineup-formation {
+  margin-bottom: 15px;
+}
+
+.lineup-formation-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.lineup-pp-defense {
+  justify-content: center;
+  gap: 30px;
+}
+
+/* Player Selection Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lineup-player-modal {
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lineup-player-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.lineup-player-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 300px;
+  margin: 5px auto;
+}
+
+.lineup-player-option:hover {
+  background: #3a3a3a;
+  border-color: #266EFF;
+}
+
+.lineup-player-option.selected {
+  background: #1E4A7F;
+  border-color: #266EFF;
+}
+
+.lineup-player-option.assigned {
+  opacity: 0.6;
+}
+
+.lineup-player-number {
+  color: #888;
+  font-weight: 600;
+  min-width: 30px;
+}
+
+.lineup-player-name {
+  color: #fff;
+  flex: 1;
+}
+
+.lineup-player-assigned {
+  color: #266EFF;
+  font-size: 0.9rem;
+}
+
+/* Player Out Modal Styles */
+.player-out-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.player-out-item:hover {
+  background: #3a3a3a;
+  border-color: #b00020;
+}
+
+.player-out-item.selected {
+  background: #4a1a1a;
+  border-color: #b00020;
+}
+
+/* Responsive */
+/* Responsive - Line Up Mobile */
+@media (max-width: 768px) {
+  .lineup-special-teams {
+    flex-direction: column;
+  }
+  
+  .lineup-line-row {
+    gap: 8px;
+  }
+  
+  .lineup-position {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .lineup-defense-pair {
+    gap: 10px;
+  }
+  
+  .lineup-pair-stats {
+    min-width: 90px;
+    font-size: 0.75rem;
+  }
+  
+  /* Season Map Mobile Fixes - Prevents goal overflow and arranges elements vertically */
+  #seasonMapPage .torbild-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    gap: 15px;
+  }
+  
+  #seasonMapPage .field-column,
+  #seasonMapPage .goal-column {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  #seasonMapPage .goal-column {
+    gap: 15px;
+  }
+  
+  #seasonMapPage .img-box,
+  #seasonMapPage .field-box,
+  #seasonMapPage .goal-img-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Heatmap canvas - mobile specific sizing */
+  #seasonMapPage .heatmap-canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Goal Map Mobile Layout - Same as Season Map */
+  #torbildPage .torbild-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    gap: 15px;
+  }
+  
+  #torbildPage .field-column,
+  #torbildPage .goal-column {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  #torbildPage .goal-column {
+    gap: 15px;
+  }
+  
+  #torbildPage .img-box,
+  #torbildPage .field-box,
+  #torbildPage .goal-img-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Mobile: Top Bar Button Wrapping - CRITICAL FIX for cut-off buttons */
+  #seasonMapPage .top-bar,
+  #torbildPage .top-bar {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    gap: 8px;
+  }
+  
+  #seasonMapPage .top-bar .top-btn,
+  #seasonMapPage .top-bar .player-filter-btn,
+  #torbildPage .top-bar .top-btn,
+  #torbildPage .top-bar .player-filter-btn {
+    flex: 0 1 auto !important;
+    min-width: 110px !important;
+    max-width: none !important;
+    font-size: 0.85rem !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Mobile: Time Tracking Box - Constrain width and center to prevent shifting */
+  #seasonMapPage .time-tracking-box,
+  #torbildPage .time-tracking-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+  
+  /* PROBLEM 1 FIX: TimeBox Container - Vertikal zentrieren und Scrollbar verstecken */
+  #torbildPage .time-tracking-box,
+  .time-tracking-box {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;  /* Vertikal zentrieren */
+    align-items: center !important;
+    overflow: hidden !important;  /* Keine Scrollbar */
+    height: 100% !important;
+    padding: 5px !important;
+    box-sizing: border-box !important;
+    -ms-overflow-style: none !important;  /* IE/Edge Scrollbar verstecken */
+    scrollbar-width: none !important;  /* Firefox Scrollbar verstecken */
+  }
+  
+  /* Webkit Scrollbar verstecken */
+  #torbildPage .time-tracking-box::-webkit-scrollbar,
+  .time-tracking-box::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  
+  /* Mobile: Period buttons - ensure 4-column grid is maintained with proper sizing */
+  .period {
+    grid-template-columns: repeat(4, 1fr) !important;
+    padding: 6px 8px !important;
+    width: 95% !important;
+    margin: 4px auto !important;
+  }
+  
+  /* PROBLEM 1 FIX: Period Container - kleiner wenn nötig */
+  #torbildPage .period,
+  .time-tracking-box .period,
+  .period {
+    flex-shrink: 1 !important;  /* Kann kleiner werden */
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 3px auto !important;
+    transform: scale(0.95);  /* 5% kleiner */
+    transform-origin: center center;
+  }
+  
+  /* Mobile: Time buttons - reasonable height and font size */
+  .time-btn {
+    height: 28px !important;
+    font-size: 13px !important;
+    min-height: 28px !important;
+  }
+  
+  /* Mobile: Period title - slightly smaller for mobile */
+  .period-title {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* ==================== */
+/* ADD TIME MODAL       */
+/* ==================== */
+
+.time-input-group {
+  margin: 15px 0;
+}
+
+.time-input-group label {
+  display: block;
+  color: #fff;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+#addTimeModal .modal-content h3 {
+  color: #266EFF;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+#addTimeModal .modal-content p {
+  color: #ccc;
+  margin: 10px 0;
+  font-size: 0.95rem;
+}
+
+#addTimeModal .modal-content p span {
+  color: #266EFF;
+  font-weight: 600;
+}
+
+#addTimeModal #addTimeInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+  text-align: center;
+  font-weight: 600;
+}
+
+#addTimeModal #addTimeInput:focus {
+  outline: none;
+  border-color: #266EFF;
+}
+
+#addTimeModal .modal-buttons {
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: center !important;
+  margin-top: 20px !important;
+}
+
+#addTimeModal .modal-buttons button,
+#addTimeModal #addTimeCancelBtn,
+#addTimeModal #addTimeConfirmBtn {
+  flex: 0 0 auto !important;
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  padding: 12px 20px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-sizing: border-box !important;
+}
+
+#addTimeModal #addTimeConfirmBtn {
+  background: #266EFF;
+  color: white;
+}
+
+#addTimeModal #addTimeConfirmBtn:hover {
+  background: #1E5AD8;
+}
+
+#addTimeModal #addTimeCancelBtn {
+  background: #444;
+  color: #fff;
+}
+
+#addTimeModal #addTimeCancelBtn:hover {
+  background: #555;
+}
+
+/* Goalie Selection Modal */
+
+/* Season Time Cell Cursor */
+.season-time-cell {
+  cursor: pointer !important;
+  user-select: none;
+}
+
+/* Task 4: Toast Notification Styles */
+.toast-notification {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(68, 187, 145, 0.95);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.toast-notification.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* FIX: Team Edit Modal - Buttons gleich groß */
+#teamEditModal .modal-buttons {
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: center !important;
+  margin-top: 20px !important;
+}
+
+#teamEditModal .modal-buttons button,
+#teamEditModal .modal-buttons .confirm-btn,
+#teamEditModal .modal-buttons .cancel-btn,
+#saveTeamNameBtn,
+#cancelTeamEditBtn {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  width: auto !important;
+  padding: 12px 20px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+#saveTeamNameBtn,
+#teamEditModal .confirm-btn {
+  background: #266EFF !important;
+  color: #fff !important;
+}
+
+#saveTeamNameBtn:hover,
+#teamEditModal .confirm-btn:hover {
+  background: #1E5AD8 !important;
+}
+
+#cancelTeamEditBtn,
+#teamEditModal .cancel-btn {
+  background: #3a3a3a !important;
+  color: #fff !important;
+}
+
+#cancelTeamEditBtn:hover,
+#teamEditModal .cancel-btn:hover {
+  background: #4a4a4a !important;
+}
+
+/* FIX: Line Up Stats sichtbar machen */
+.lineup-line-stats,
+.lineup-pair-stats {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #888 !important;
+  font-size: 0.85rem !important;
+  text-align: center !important;
+  margin-top: 4px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+#seasonContainer table,
+#seasonContainer .season-table {
+  margin: 0 auto !important;
+}
+
+/* FIX: Line Up Button - consistent blue across all pages */
+.lineup-btn,
+#lineupBtn,
+#lineupBtnFromStats {
+  background: #00B9FF !important;
+  color: #fff !important;
+}
+
+.lineup-btn:hover,
+#lineupBtn:hover,
+#lineupBtnFromStats:hover {
+  background: #0099DD !important;
+}
+
+
+/* ===== WORKFLOW TIMEBOX BLOCKING ===== */
+/* Während rotem Workflow (conceded): Grüne Buttons ausgegraut und blockiert */
+body.workflow-conceded .period-buttons.top-row .time-btn {
+  opacity: 0.3 !important;
+  filter: grayscale(100%) !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+/* ===== CONCEDED WORKFLOW: GRÜNE BEREICHE SPERREN ===== */
+
+/* Grünes Tor während conceded workflow gesperrt */
+body.workflow-conceded #goalGreenBox {
+  opacity: 0.3 !important;
+  filter: grayscale(70%) !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+/* Grüne Feldhälfte: Overlay während conceded workflow */
+body.workflow-conceded #fieldBox::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(128, 128, 128, 0.5);
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 8px 8px 0 0;
+}
+
+/* ===== GOAL WORKFLOW: ROTE BEREICHE SOFORT SPERREN ===== */
+/* Wenn Goal-Workflow aktiv ist (body hat workflow-goal Klasse) */
+
+/* Rotes Tor während goal workflow (bevor Typ bestimmt ist) */
+body.workflow-goal:not(.workflow-conceded) #goalRedBox {
+  opacity: 0.3 !important;
+  filter: grayscale(70%) !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+/* Rote Feldhälfte: Overlay während goal workflow (bevor Typ bestimmt ist) */
+body.workflow-goal:not(.workflow-conceded) #fieldBox::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(128, 128, 128, 0.5);
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Rote Buttons während goal workflow (bevor Typ bestimmt ist) */
+body.workflow-goal:not(.workflow-conceded) .period-buttons.bottom-row .time-btn {
+  opacity: 0.3 !important;
+  filter: grayscale(100%) !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+/* ===== WORKFLOW-SPECIFIC RED ZONE BLOCKING (LEGACY - kept for backwards compatibility) ===== */
+/* During scored workflow (green): Red goal, red field zone, and red buttons are locked */
+body.workflow-scored #goalRedBox {
+  opacity: 0.3 !important;
+  filter: grayscale(70%) !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+/* During scored workflow: Red zone of field (bottom half) visually locked */
+body.workflow-scored #fieldBox::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(128, 128, 128, 0.5);
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 0 0 8px 8px;
+}
+
+/* During scored workflow: Red buttons (bottom-row) locked */
+body.workflow-scored .period-buttons.bottom-row .time-btn {
+  opacity: 0.3 !important;
+  filter: grayscale(100%) !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+
+/* ===== FILTER BUTTON PULSIERUNG ===== */
+/* Green pulsing animation for player button */
+@keyframes neon-pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 5px #266EFF, 0 0 10px #266EFF, 0 0 15px #266EFF;
+  }
+  50% {
+    box-shadow: 0 0 10px #266EFF, 0 0 20px #266EFF, 0 0 30px #266EFF;
+  }
+}
+
+/* ===== INFO MODAL STYLES ===== */
+.info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Info Modal - Light Mode: weißer Hintergrund */
+.info-content,
+.info-modal-content {
+  background: #ffffff;
+  color: #000000;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark Mode - bleibt wie es ist */
+[data-theme="dark"] .info-content,
+[data-theme="dark"] .info-modal-content {
+  background: #1e1e1e;
+  color: #ffffff;
+}
+
+.info-content h2,
+.info-modal-content h2,
+.info-section-title {
+  color: #266EFF !important;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 1.4em !important;
+  text-align: center;
+}
+
+[data-theme="dark"] .info-content h2,
+[data-theme="dark"] .info-modal-content h2,
+[data-theme="dark"] .info-section-title {
+  color: #266EFF !important;
+}
+
+.info-content h3,
+.info-modal-content h3,
+h3.info-title {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #266EFF;
+  font-size: 1.4em !important;
+  font-weight: 700;
+  text-align: center;
+}
+
+.info-content ol,
+.info-content ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .info-content ol,
+[data-theme="dark"] .info-content ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-content li {
+  margin-bottom: 0.5rem;
+  color: #000000;
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .info-content li {
+  color: #ffffff;
+}
+
+.info-content p {
+  margin-bottom: 0.5rem;
+  color: #000000;
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .info-content p {
+  color: #ffffff;
+}
+
+.info-divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 20px 0;
+}
+
+[data-theme="dark"] .info-divider {
+  border-top-color: #555;
+}
+
+#infoCloseBtn {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 0.75rem 2rem;
+  background: #266EFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+#infoCloseBtn:hover {
+  background: #1E5AD8;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(38, 110, 255, 0.4);
+}
+
+/* Language Selector Styles */
+.info-language-selector {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.info-language-selector select {
+  padding: 8px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+[data-theme="dark"] .info-language-selector select {
+  background: #2b2b2b;
+  color: #fff;
+  border-color: #444;
+}
+
+/* Close button styles for info modals */
+.info-close-btn,
+.page-info-close-btn {
+  background: #266EFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: block;
+  margin: 20px auto;
+  text-align: center;
+  min-width: 150px;
+}
+
+.info-close-btn:hover,
+.page-info-close-btn:hover {
+  background: #1E5AD8;
+}
+
+/* Tip styling in main info */
+.info-tip {
+  color: #FFD700; /* Gold/Yellow */
+  font-weight: 700; /* Bold */
+  font-size: 0.85em; /* Smaller so it fits on one line */
+  white-space: nowrap; /* One line */
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* Workflow title styling */
+.info-workflow-title {
+  color: #266EFF;
+  font-size: 1.4em;
+  font-weight: 700;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ===== GOAL MAP LAYOUT FIX - OVERRIDES ===== */
+/* These must be at the END of the file to have highest specificity */
+
+/* Desktop: 50/50 split, no 16:9 constraint */
+@media (min-width: 1025px) {
+  #torbildPage .torbild-layout {
+    flex-direction: row;
+    gap: 20px;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+  }
+  #torbildPage .field-column { flex: 1 1 50%; min-width: 0; }
+  #torbildPage .goal-column  { display: flex; flex-direction: column; flex: 1 1 50%; min-width: 0; gap: 15px; }
+
+  /* Boxes should fill available space */
+  #torbildPage .field-box,
+  #torbildPage .goal-img-box {
+    height: 100%;
+    min-height: 0;
+  }
+  
+  #torbildPage .time-tracking-box {
+    height: 100%;
+    min-height: 0;
+    overflow: visible !important; /* Important for Timebox - shows all periods */
+    overflow-y: auto !important;
+  }
+}
+
+/* Tablet: row layout, moderate height, no aspect-ratio constraints */
+@media (min-width: 901px) and (max-width: 1024px) {
+  #torbildPage .torbild-layout {
+    flex-direction: row;
+    gap: 16px;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+  }
+  #torbildPage .field-column { flex: 1 1 50%; min-width: 0; }
+  #torbildPage .goal-column  { display: flex; flex-direction: column; flex: 1 1 50%; min-width: 0; gap: 12px; }
+
+  #torbildPage .field-box,
+  #torbildPage .goal-img-box {
+    height: 100%;
+    min-height: 0;
+  }
+  
+  #torbildPage .time-tracking-box {
+    height: 100%;
+    min-height: 0;
+    overflow: visible !important; /* Don't clip Timebox */
+    overflow-y: auto !important;
+  }
+}
+
+/* Mobile: column layout maintained, but nothing clipped */
+@media (max-width: 900px) {
+  #torbildPage .torbild-layout {
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+  }
+
+  #torbildPage .field-box,
+  #torbildPage .goal-img-box {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+  }
+  
+  #torbildPage .time-tracking-box {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    overflow: visible !important; /* All periods visible */
+    overflow-y: auto !important;
+  }
+}
+
+/* Shared image rules: Images should fill boxes without clipping */
+#torbildPage .goal-img-box img,
+#torbildPage .field-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ===== SEASON MAP LAYOUT FIX - OVERRIDES ===== */
+
+/* SEASON MAP: Desktop >= 1025px – 50/50 Layout, boxes fill, no 16:9 constraints */
+@media (min-width: 1025px) {
+  #seasonMapPage .torbild-layout {
+    flex-direction: row;
+    gap: 20px;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+    margin-bottom: 32px; /* Momentum graphic stays below */
+  }
+  #seasonMapPage .field-column { flex: 1 1 50%; min-width: 0; }
+  #seasonMapPage .goal-column  { flex: 1 1 50%; min-width: 0; gap: 15px; }
+
+  #seasonMapPage .field-box,
+  #seasonMapPage .goal-img-box {
+    height: 100%;
+    min-height: 0;
+  }
+  
+  #seasonMapPage .time-tracking-box {
+    height: 100%;
+    min-height: 0;
+    overflow: visible !important; /* don't clip anything */
+    overflow-y: auto !important;
+  }
+}
+
+/* SEASON MAP: Tablet 901–1024px – also 50/50, no aspect-ratio constraints */
+@media (min-width: 901px) and (max-width: 1024px) {
+  #seasonMapPage .torbild-layout {
+    flex-direction: row;
+    gap: 16px;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+    margin-bottom: 24px;
+  }
+  #seasonMapPage .field-column { flex: 1 1 50%; min-width: 0; }
+  #seasonMapPage .goal-column  { flex: 1 1 50%; min-width: 0; gap: 12px; }
+
+  #seasonMapPage .field-box,
+  #seasonMapPage .goal-img-box {
+    height: 100%;
+    min-height: 0;
+  }
+  
+  #seasonMapPage .time-tracking-box {
+    height: 100%;
+    min-height: 0;
+    overflow: visible !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* SEASON MAP: Mobile <= 900px – keep column stack, but don't clip */
+@media (max-width: 900px) {
+  #seasonMapPage .torbild-layout {
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    aspect-ratio: unset;
+    margin-bottom: 16px;
+  }
+
+  #seasonMapPage .field-box,
+  #seasonMapPage .goal-img-box {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+  }
+  
+  #seasonMapPage .time-tracking-box {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    overflow: visible !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Images fill their boxes without clipping */
+#seasonMapPage .goal-img-box img,
+#seasonMapPage .field-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ===== SEASON TABLE RESPONSIVE STICKY COLUMNS ===== */
+
+/* Tablet (≤1024px): All 3 columns sticky, but narrower */
+@media (max-width: 1024px) {
+  :root {
+    --w-nr: 28px;
+    --w-player: 120px;
+    --w-pos: 52px;
+  }
+  
+  .season-table th,
+  .season-table td {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile (≤768px): Only Nr + Player sticky, Pos scrolls with */
+@media (max-width: 768px) {
+  :root {
+    --w-nr: 24px;
+    --w-player: 100px;
+  }
+  
+  .season-table :is(th, td):nth-child(3) {
+    position: static;
+    left: auto;
+    width: auto;
+    min-width: auto;
+    max-width: none;
+    z-index: auto;
+    box-shadow: none;
+  }
+  
+  .season-table th,
+  .season-table td {
+    padding: 5px 6px;
+    font-size: 12px;
+  }
+}
+
+/* ===== GOAL VALUE EXPORT MODAL - STAR RATING ===== */
+
+/* Input group styling for Goal Value Modal */
+#goalValueExportModal .input-group {
+  margin: 16px 0;
+}
+
+#goalValueExportModal .input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+#goalValueExportModal .input-group input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] #goalValueExportModal .input-group input[type="text"] {
+  border-color: #555;
+  background: #2a2a2a;
+}
+
+#goalValueExportModal .input-group input[type="text"]:focus {
+  outline: none;
+  border-color: #266EFF;
+  box-shadow: 0 0 0 2px rgba(68, 187, 145, 0.2);
+}
+
+/* Star Rating Container */
+.star-rating-group {
+  margin: 20px 0;
+}
+
+.star-rating-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+  font-size: 28px;
+  cursor: pointer;
+  justify-content: center;
+  user-select: none;
+  margin-bottom: 8px;
+}
+
+.star-rating .star {
+  color: #ccc;
+  transition: color 0.2s, transform 0.1s;
+  cursor: pointer;
+}
+
+.star-rating .star:hover {
+  transform: scale(1.15);
+}
+
+.star-rating .star.filled,
+.star-rating .star.hover {
+  color: #ffc107; /* Gold */
+}
+
+[data-theme="dark"] .star-rating .star {
+  color: #555;
+}
+
+[data-theme="dark"] .star-rating .star.filled,
+[data-theme="dark"] .star-rating .star.hover {
+  color: #ffd700; /* Brighter gold for dark mode */
+}
+
+/* Star Rating Value Display */
+#starRatingValue {
+  display: inline-block;
+  margin-left: 12px;
+  font-weight: bold;
+  font-size: 20px;
+  color: var(--text-color);
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Goal Value Export Modal specific button styling */
+#goalValueExportModal .modal-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;  /* Gleiche Höhe */
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+#goalValueExportModal .modal-buttons button {
+  /* KRITISCH: Gleiche Breite für beide Buttons */
+  width: 130px !important;
+  min-width: 130px !important;
+  max-width: 130px !important;
+  height: 44px !important;  /* Gleiche Höhe */
+  min-height: 44px !important;
+  max-height: 44px !important;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#goalValueExportConfirm {
+  background: #266EFF;
+  color: #fff;
+}
+
+#goalValueExportConfirm:hover {
+  background: #1E5AD8;
+}
+
+#goalValueExportCancel {
+  background: #444;
+  color: #fff;
+  border: 1px solid #666;
+}
+
+#goalValueExportCancel:hover {
+  background: #555;
+}
+
+[data-theme="dark"] #goalValueExportCancel {
+  background: #4a4a4a;
+}
+
+[data-theme="dark"] #goalValueExportCancel:hover {
+  background: #5a5a5a;
+}
+
+/* Goal Value Export Modal - Text immer weiß (unabhängig vom Theme, da Modal-Hintergrund dunkel ist) */
+#goalValueExportModal h3,
+#goalValueExportModal label,
+#goalValueExportModal #starRatingValue {
+  color: #fff !important;
+}
+
+/* Edit Team Name Modal - Text immer weiß (unabhängig vom Theme, da Modal-Hintergrund dunkel ist) */
+#teamEditModal h3 {
+  color: #fff !important;
+}
+
+
+/* Fix für Tablet Portrait: Spielfeld ragt oben raus */
+@media (min-width: 600px) and (max-width: 900px) and (orientation: portrait) {
+  .field-box {
+    overflow: hidden !important; /* Abschneiden erzwingen */
+  }
+  .field-box img {
+    max-height: 100% !important; /* Bild darf nicht höher als Container sein */
+    object-fit: contain;
+  }
+}
+
+/* ============================================================
+   Subscription Paywall
+   ============================================================ */
+#subscriptionPaywall {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 99999;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.paywall-container {
+  text-align: center;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+}
+.paywall-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+#subscriptionPaywall h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+.paywall-subtitle {
+  color: #8899aa;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+.paywall-price {
+  margin-bottom: 2rem;
+}
+.price-amount {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #4fc3f7;
+}
+.price-period {
+  font-size: 1.2rem;
+  color: #8899aa;
+}
+.paywall-features {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  margin: 0 auto 2rem;
+  max-width: 280px;
+}
+.paywall-features li {
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.paywall-btn {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #2563eb, #4fc3f7);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.paywall-btn:active {
+  transform: scale(0.97);
+}
+.paywall-btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  background: transparent;
+  color: #4fc3f7;
+  font-size: 0.95rem;
+  border: 1px solid rgba(79, 195, 247, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+.paywall-legal {
+  font-size: 0.75rem;
+  color: #667788;
+  line-height: 1.4;
+}
+body.locked {
+  overflow: hidden;
+}
+
+#appContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+

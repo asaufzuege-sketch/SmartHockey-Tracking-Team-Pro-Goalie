@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.asaufzuege_sketch.twa",
+      "sha256_cert_fingerprints": [
+        "0E:DD:08:16:13:44:0A:EC:8A:C6:89:85:85:B8:0D:88:0B:08:FB:B1:57:35:89:73:2F:B7:E3:5E:25:CC:9E:60",
+        "64:00:09:7E:BE:D1:D7:66:1E:4D:E0:FF:4E:8B:DB:68:EB:37:06:B4:AD:F1:40:94:29:3B:F6:AE:4C:40:8F:DE"
+      ]
+    }
+  }
+]

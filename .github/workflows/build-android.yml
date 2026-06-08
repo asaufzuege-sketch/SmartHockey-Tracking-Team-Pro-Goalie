@@ -1,0 +1,28 @@
+name: Build Play Store App
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Android TWA
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Build App with Bubblewrap Action
+        uses: GoogleChromeLabs/bubblewrap-github-action@v2
+        with:
+          manifestUrl: "https://smarthockeyproducts.com/SmartHockey-Tracking-Team-Pro/manifest.json"
+          appId: "io.github.asaufzuege_sketch.twa"
+          keystoreBase64: ${{ secrets.PLAYSTORE_KEYSTORE }}
+          keystorePassword: ${{ secrets.PLAYSTORE_KEYSTORE_PASSWORD }}
+          keyAlias: ${{ secrets.PLAYSTORE_KEY_ALIAS }}
+          keyPassword: ${{ secrets.PLAYSTORE_KEY_PASSWORD }}
+
+      - name: Upload .aab Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartHockey-PlayStore-Update
+          path: app-release-bundle.aab

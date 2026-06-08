@@ -1,0 +1,51 @@
+/* Styles for Goal Value table and inline editors (add into style.css or include separately) */
+
+.goal-value-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.95rem;  /* EXACT same as Season Table */
+  margin-top: 6px;
+}
+
+.goal-value-table tbody tr:nth-child(odd) {
+  background: var(--row-odd, #f6f7f9);
+}
+.goal-value-table tbody tr:nth-child(even) {
+  background: var(--row-even, #ffffff);
+}
+
+.goal-value-table td, .goal-value-table th {
+  padding: 8px 10px;
+  border: none !important;  /* NO black lines between names */
+  text-align: center;
+}
+.goal-value-table tbody tr:hover { background: #eef6ff; }
+
+.gv-cell {
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+}
+
+.gv-scale {
+  cursor: pointer;
+  color: #fff;
+  background: rgba(0,0,0,0.15);
+  padding: 3px 6px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.inline-editor {
+  padding: 4px 6px;
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  width: 64px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Keep parity with existing .even-row/.odd-row classes used elsewhere */
+.goal-value-table .even-row { background: var(--row-even); }
+.goal-value-table .odd-row { background: var(--row-odd); }
