@@ -3,6 +3,7 @@
 App.seasonTable = {
   container: null,
   sortState: { index: null, asc: true },
+  goalieSortState: { key: null, asc: true },
   isRendering: false, // NEU: Flag um Rekursion zu verhindern
   clickTimers: new WeakMap(), // Store click timers per cell to avoid race conditions
   positionFilter: '', // Aktueller Positionsfilter
@@ -666,18 +667,59 @@ setStickyOffsets() {
     gFixedThead.appendChild(gFixedHeaderRow);
     goalieFixedTable.appendChild(gFixedThead);
 
-    // --- Goalie Scroll-Tabelle (GP, MIN, GA, SA, SV, Sv%, GAA, SO, Goal Value) ---
+    // --- Goalie Scroll-Tabelle (22 Spalten, ausgerichtet zur Spieler-Tabelle) ---
     const goalieScrollTable = document.createElement("table");
     goalieScrollTable.className = "season-table-scroll goalie-table-scroll";
-    goalieScrollTable.style.width = "100%";
+    goalieScrollTable.style.tableLayout = "fixed";
+    const goalieColGroup = document.createElement("colgroup");
+    for (let i = 0; i < 22; i++) goalieColGroup.appendChild(document.createElement("col"));
+    goalieScrollTable.appendChild(goalieColGroup);
 
     const gScrollThead = document.createElement("thead");
     const gScrollHeaderRow = document.createElement("tr");
-    ["Games", "MIN", "GA", "SA", "SV", "Sv%", "GAA", "SO", "Goal Value", "MVP", "MVP Points"].forEach(text => {
+    const goalieHeaderMap = {
+      0: { label: "Games", key: "games" },
+      1: { label: "MIN", key: "minutesDec" },
+      2: { label: "GA", key: "ga" },
+      3: { label: "SA", key: "sa" },
+      4: { label: "SV", key: "sv" },
+      5: { label: "Sv%", key: "svPctSort" },
+      6: { label: "GAA", key: "gaaValue" },
+      7: { label: "SO", key: "shutouts" },
+      12: { label: "Goal Value", key: "goalieGoalValue" },
+      20: { label: "MVP", key: "mvpRank" },
+      21: { label: "MVP Points", key: "mvpPointsRounded" }
+    };
+    for (let colIdx = 0; colIdx < 22; colIdx++) {
       const th = document.createElement("th");
-      th.textContent = text;
+      const def = goalieHeaderMap[colIdx];
+      if (def) {
+        th.textContent = def.label;
+        th.className = "sortable";
+        th.style.cursor = "pointer";
+        th.dataset.goalieSortKey = def.key;
+        const arrow = document.createElement("span");
+        arrow.className = "sort-arrow";
+        arrow.style.marginLeft = "6px";
+        if (this.goalieSortState.key === def.key) {
+          arrow.textContent = this.goalieSortState.asc ? "▴" : "▾";
+        }
+        th.appendChild(arrow);
+        th.addEventListener("click", () => {
+          if (this.goalieSortState.key === def.key) {
+            this.goalieSortState.asc = !this.goalieSortState.asc;
+          } else {
+            this.goalieSortState.key = def.key;
+            this.goalieSortState.asc = true;
+          }
+          this.render();
+          if (this.positionFilter) this.filterByPosition(this.positionFilter);
+        });
+      } else {
+        th.textContent = "";
+      }
       gScrollHeaderRow.appendChild(th);
-    });
+    }
     gScrollThead.appendChild(gScrollHeaderRow);
     goalieScrollTable.appendChild(gScrollThead);
 
@@ -718,11 +760,11 @@ setStickyOffsets() {
     // - Spielzeit wirkt zweifach: als Konfidenzfaktor (kleine Samples dämpfen)
     //   und als kleiner Einsatzbonus.
     // - Invertierte Goal Value bestraft Gegentore, besonders gegen schwache Gegner.
-    const MVP_SV_BASELINE = 88;
-    const MVP_W_SV = 2.0;
-    const MVP_CONF_FULL_MIN = 200;
-    const MVP_W_GV = 2.0;
-    const MVP_W_MIN = 0.01;
+    // --- justierbare Gewichte (Goalie-MVP) ---
+    const MVP_W_SV = 1.0;   // Gewicht der Fangquote (Skala 0..100)
+    const MVP_FULL_MIN = 150; // Spielzeit (Min) für volle Konfidenz (~2–3 Spiele)
+    const MVP_W_GV = 1.5;   // Strafe je invertiertem GoalValue-Punkt pro Spiel
+    const MVP_W_MIN = 0.02; // kleiner Einsatz-/Volumenbonus pro Minute
 
     // Summen für Total-Zeile
     const totals = { games: 0, minutesDec: 0, ga: 0, sa: 0 };
@@ -736,15 +778,18 @@ setStickyOffsets() {
       const sa = Number(gsd.shotsAgainst || 0);
       const sv = sa - ga;
       const svPctValue = sa > 0 ? (sv / sa) * 100 : 0;
+      const svPctSort = sa > 0 ? svPctValue : null;
       const svPct = sa > 0 ? svPctValue.toFixed(1) + "%" : "–";
-      const gaa = minutesDec > 0 ? (ga * 60 / minutesDec).toFixed(2) : "–";
+      const gaaValue = minutesDec > 0 ? (ga * 60 / minutesDec) : null;
+      const gaa = gaaValue !== null ? gaaValue.toFixed(2) : "–";
       const shutouts = Number(gsd.shutouts || 0);
       const goalieGoalValue = computeGoalieGV(gsd);
+      const confidence = Math.min(1, minutesDec / MVP_FULL_MIN);
       const gvPerGame = games > 0 ? goalieGoalValue / games : 0;
-      const confidence = Math.min(1, minutesDec / MVP_CONF_FULL_MIN);
-      const mvpPoints = ((svPctValue - MVP_SV_BASELINE) * MVP_W_SV * confidence)
+      let mvpPoints = (svPctValue * MVP_W_SV * confidence)
         - (gvPerGame * MVP_W_GV)
         + (minutesDec * MVP_W_MIN);
+      mvpPoints = Math.max(0, mvpPoints);
       const mvpPointsRounded = Number(mvpPoints.toFixed(1));
 
       totals.games += games;
@@ -763,7 +808,9 @@ setStickyOffsets() {
         sa,
         sv,
         svPct,
+        svPctSort,
         gaa,
+        gaaValue,
         shutouts,
         goalieGoalValue,
         mvpPointsRounded
@@ -774,11 +821,51 @@ setStickyOffsets() {
     const uniqueScores = [...new Set(sortedByMvp.map(r => r.mvpPointsRounded))];
     const scoreToRank = {};
     uniqueScores.forEach((s, idx) => { scoreToRank[s] = idx + 1; });
-
     goalieRows.forEach(row => {
+      row.mvpRank = scoreToRank[row.mvpPointsRounded] || "";
+    });
+
+    const normalizeGoalieSortValue = (val) => {
+      if (val === null || val === undefined || val === "" || val === "–") return Number.NEGATIVE_INFINITY;
+      const num = Number(val);
+      return Number.isFinite(num) ? num : Number.NEGATIVE_INFINITY;
+    };
+
+    let displayGoalieRows = goalieRows.slice();
+    if (!this.goalieSortState.key) {
+      displayGoalieRows.sort((a, b) => (b.mvpPointsRounded || 0) - (a.mvpPointsRounded || 0));
+    } else {
+      const sortKey = this.goalieSortState.key;
+      const asc = this.goalieSortState.asc;
+      displayGoalieRows.sort((a, b) => {
+        const va = normalizeGoalieSortValue(a[sortKey]);
+        const vb = normalizeGoalieSortValue(b[sortKey]);
+        if (va === vb) return 0;
+        return asc ? va - vb : vb - va;
+      });
+    }
+
+    const createGoalieCells = (row) => {
+      const cells = new Array(22).fill("");
+      cells[0] = row.games;
+      cells[1] = row.minutes;
+      cells[2] = row.ga;
+      cells[3] = row.sa;
+      cells[4] = row.sv;
+      cells[5] = row.svPct;
+      cells[6] = row.gaa;
+      cells[7] = row.shutouts;
+      cells[12] = row.goalieGoalValue;
+      cells[20] = row.mvpRank;
+      cells[21] = row.mvpPointsRounded.toFixed(1);
+      return cells;
+    };
+
+    displayGoalieRows.forEach((row, rowIndex) => {
+      const rowClass = (rowIndex % 2 === 0) ? "even-row" : "odd-row";
       // Fixed: Nr + Name + Pos.
       const gFixedTr = document.createElement("tr");
-      gFixedTr.className = row.rowClass;
+      gFixedTr.className = rowClass;
       [row.num, row.name, "G"].forEach((txt, i) => {
         const td = document.createElement("td");
         td.textContent = txt;
@@ -790,20 +877,8 @@ setStickyOffsets() {
 
       // Scroll: Games, MIN, GA, SA, SV, Sv%, GAA, SO, Goal Value, MVP, MVP Points
       const gScrollTr = document.createElement("tr");
-      gScrollTr.className = row.rowClass;
-      [
-        row.games,
-        row.minutes,
-        row.ga,
-        row.sa,
-        row.sv,
-        row.svPct,
-        row.gaa,
-        row.shutouts,
-        row.goalieGoalValue,
-        scoreToRank[row.mvpPointsRounded] || "",
-        row.mvpPointsRounded.toFixed(1)
-      ].forEach(val => {
+      gScrollTr.className = rowClass;
+      createGoalieCells(row).forEach(val => {
         const td = document.createElement("td");
         td.textContent = val;
         gScrollTr.appendChild(td);
@@ -824,7 +899,7 @@ setStickyOffsets() {
 
       const emptyScrollTr = document.createElement("tr");
       const emptyScrollTd = document.createElement("td");
-      emptyScrollTd.colSpan = 11;
+      emptyScrollTd.colSpan = 22;
       emptyScrollTd.textContent = "Keine Goalie-Saison-Daten";
       emptyScrollTd.style.textAlign = "center";
       emptyScrollTd.style.opacity = "0.5";
@@ -858,7 +933,17 @@ setStickyOffsets() {
 
       const gScrollTotalTr = document.createElement("tr");
       gScrollTotalTr.className = "total-row";
-      ["", formatMinutes(totals.minutesDec), totalGA, totalSA, totalSV, totalSvPct, totalGAA, "", "", "", ""].forEach(val => {
+      const totalCells = new Array(22).fill("");
+      totalCells[1] = formatMinutes(totals.minutesDec);
+      totalCells[2] = totalGA;
+      totalCells[3] = totalSA;
+      totalCells[4] = totalSV;
+      totalCells[5] = totalSvPct;
+      totalCells[6] = totalGAA;
+      totalCells[7] = "";
+      totalCells[20] = "";
+      totalCells[21] = "";
+      totalCells.forEach(val => {
         const td = document.createElement("td");
         td.textContent = val;
         gScrollTotalTr.appendChild(td);
@@ -871,6 +956,37 @@ setStickyOffsets() {
 
     fixedContainer.appendChild(goalieFixedTable);
     tableScrollWrapper.appendChild(goalieScrollTable);
+
+    const syncGoalieColumnWidths = (attempt = 0) => {
+      const playerScrollTable = tableScrollWrapper.querySelector("table.season-table-scroll:not(.goalie-table-scroll)");
+      if (!playerScrollTable) return;
+      const playerHeaderCells = Array.from(playerScrollTable.querySelectorAll("thead th"));
+      if (playerHeaderCells.length !== 22) {
+        if (attempt < 4) requestAnimationFrame(() => syncGoalieColumnWidths(attempt + 1));
+        return;
+      }
+
+      const widths = playerHeaderCells.map((th) => th.getBoundingClientRect().width);
+      const hasZeroWidth = widths.some((w) => !Number.isFinite(w) || w <= 0);
+      if (hasZeroWidth) {
+        if (attempt < 4) requestAnimationFrame(() => syncGoalieColumnWidths(attempt + 1));
+        return;
+      }
+
+      const goalieCols = goalieColGroup.querySelectorAll("col");
+      widths.forEach((width, idx) => {
+        if (!goalieCols[idx]) return;
+        goalieCols[idx].style.width = `${width}px`;
+      });
+
+      const playerTableWidth = playerScrollTable.getBoundingClientRect().width;
+      if (playerTableWidth > 0) {
+        const exactWidth = `${playerTableWidth}px`;
+        goalieScrollTable.style.width = exactWidth;
+        goalieScrollTable.style.minWidth = exactWidth;
+      }
+    };
+    requestAnimationFrame(() => syncGoalieColumnWidths());
   },
 
 
