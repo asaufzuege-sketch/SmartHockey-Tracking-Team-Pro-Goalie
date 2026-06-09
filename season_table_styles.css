@@ -58,13 +58,47 @@
   font-size: 0.95rem;
 }
 
+.goalie-table-fixed {
+  table-layout: fixed;
+  width: calc(var(--w-nr) + var(--w-player) + var(--w-pos)) !important;
+  min-width: calc(var(--w-nr) + var(--w-player) + var(--w-pos)) !important;
+  max-width: calc(var(--w-nr) + var(--w-player) + var(--w-pos)) !important;
+}
+
+.goalie-table-fixed :is(th, td):nth-child(1) {
+  width: var(--w-nr) !important;
+  min-width: var(--w-nr) !important;
+  max-width: var(--w-nr) !important;
+}
+
+.goalie-table-fixed :is(th, td):nth-child(2) {
+  width: var(--w-player) !important;
+  min-width: var(--w-player) !important;
+  max-width: var(--w-player) !important;
+  text-align: left;
+  padding-left: 12px;
+}
+
+.goalie-table-fixed :is(th, td):nth-child(3) {
+  width: var(--w-pos) !important;
+  min-width: var(--w-pos) !important;
+  max-width: var(--w-pos) !important;
+}
+
+.goalie-table-fixed .pos-cell {
+  min-width: var(--w-pos) !important;
+  max-width: var(--w-pos) !important;
+  text-align: center;
+  font-weight: 600;
+}
+
 .goalie-table-scroll {
-  /* Mindestbreite, damit die horizontale Scrollbar auch bei der Goalie-Tabelle greift */
-  min-width: max-content;
+  table-layout: fixed;
+  width: 100%;
 }
 
 .goalie-section-separator {
   background: var(--bg, inherit);
-  border-top: 2px solid var(--border, #555);
+  border-top: 1px solid var(--border, #555);
   color: var(--text-muted, #888);
 }
