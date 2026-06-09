@@ -638,12 +638,12 @@ setStickyOffsets() {
       return;
     }
 
-    const playerBtn = document.getElementById("seasonViewPlayerBtn");
-    const goalieBtn = document.getElementById("seasonViewGoalieBtn");
-    if (!playerBtn || !goalieBtn) return;
+    const toggleBtn = document.getElementById("seasonViewToggleBtn");
+    if (!toggleBtn) return;
 
-    playerBtn.addEventListener("click", () => this.setViewMode("player"));
-    goalieBtn.addEventListener("click", () => this.setViewMode("goalie"));
+    toggleBtn.addEventListener("click", () => {
+      this.setViewMode(this.viewMode === "goalie" ? "player" : "goalie");
+    });
     this.seasonViewListenersBound = true;
     this.updateSeasonViewToggleUI();
   },
@@ -661,15 +661,15 @@ setStickyOffsets() {
   },
 
   updateSeasonViewToggleUI() {
-    const playerBtn = document.getElementById("seasonViewPlayerBtn");
-    const goalieBtn = document.getElementById("seasonViewGoalieBtn");
-    if (!playerBtn || !goalieBtn) return;
+    const toggleBtn = document.getElementById("seasonViewToggleBtn");
+    if (!toggleBtn) return;
 
-    const isPlayerMode = this.viewMode !== "goalie";
-    playerBtn.classList.toggle("active", isPlayerMode);
-    goalieBtn.classList.toggle("active", !isPlayerMode);
-    playerBtn.setAttribute("aria-pressed", String(isPlayerMode));
-    goalieBtn.setAttribute("aria-pressed", String(!isPlayerMode));
+    const isGoalieMode = this.viewMode === "goalie";
+    const targetLabel = isGoalieMode ? "Players" : "Goalies";
+    const targetModeLabel = isGoalieMode ? "Player" : "Goalie";
+    toggleBtn.textContent = targetLabel;
+    toggleBtn.setAttribute("aria-label", `Switch to ${targetModeLabel} stats`);
+    toggleBtn.title = `Switch to ${targetModeLabel} stats`;
   },
 
   setupSynchronizedVerticalScroll(scopeElement) {
@@ -713,6 +713,7 @@ setStickyOffsets() {
   renderGoalieOnlyView() {
     const wrapper = document.createElement("div");
     wrapper.className = "season-table-wrapper";
+    wrapper.classList.add("season-goalie-only");
 
     const fixedContainer = document.createElement("div");
     fixedContainer.className = "fixed-columns";
