@@ -393,6 +393,13 @@ h1 {
   color: #fff;
 }
 
+#seasonPage button.player-filter-btn {
+  appearance: auto;
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  text-align-last: auto;
+}
+
 /* Unified Neon Pulse Animation for ALL pulsing buttons */
 /* Uses currentColor to adapt to each button's color */
 /* Applied to: Player Out button, Select Goalie button (active state) */
@@ -1001,6 +1008,21 @@ button,
   min-width: 100%;
   align-items: flex-start;
   position: relative;
+}
+
+.season-table-wrapper.season-goalie-only {
+  width: 100%;
+  min-width: 100%;
+}
+
+.season-table-wrapper.season-goalie-only .scrollable-columns {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.season-table-wrapper.season-goalie-only .table-scroll {
+  width: 100%;
 }
 
 /* Fixed Columns - HÖHERER z-index damit rechte Tabelle nicht überdeckt */
