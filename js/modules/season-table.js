@@ -2,8 +2,10 @@
 
 App.seasonTable = {
   container: null,
+  viewMode: "player",
   sortState: { index: null, asc: true },
   goalieSortState: { key: null, asc: true },
+  seasonViewListenersBound: false,
   isRendering: false, // NEU: Flag um Rekursion zu verhindern
   clickTimers: new WeakMap(), // Store click timers per cell to avoid race conditions
   positionFilter: '', // Aktueller Positionsfilter
@@ -22,6 +24,9 @@ App.seasonTable = {
       dark: getComputedStyle(document.documentElement).getPropertyValue('--row-dark-even').trim() || '#2a2a2a',
       light: getComputedStyle(document.documentElement).getPropertyValue('--row-dark-odd').trim() || '#333'
     };
+
+    this.loadViewMode();
+    this.bindSeasonViewToggle();
 
     // Event Listeners
     document.getElementById("exportSeasonFromStatsBtn")?.addEventListener("click", () => {
@@ -90,6 +95,14 @@ setStickyOffsets() {
 
     // Container komplett leeren
     this.container.innerHTML = "";
+    this.bindSeasonViewToggle();
+    this.updateSeasonViewToggleUI();
+
+    if (this.viewMode === "goalie") {
+      this.renderGoalieOnlyView();
+      this.isRendering = false;
+      return;
+    }
     
     console.log("[Season Table] Rendering started at:", new Date().toISOString());
 
@@ -582,75 +595,164 @@ setStickyOffsets() {
       });
     }
     
-    // Synchronized vertical scrolling between fixed and scrollable tables
-    const fixedCol = document.querySelector('.fixed-columns');
-    const scrollCol = document.querySelector('.scrollable-columns');
-    
-    if (fixedCol && scrollCol) {
-      // Remove old listeners if they exist
-      if (this.scrollListeners.fixed) {
-        fixedCol.removeEventListener('scroll', this.scrollListeners.fixed);
-      }
-      if (this.scrollListeners.scroll) {
-        scrollCol.removeEventListener('scroll', this.scrollListeners.scroll);
-      }
-      
-      // Create new listeners with sync protection using instance property
-      this.scrollListeners.scroll = () => {
-        if (!this.isSyncing) {
-          this.isSyncing = true;
-          fixedCol.scrollTop = scrollCol.scrollTop;
-          requestAnimationFrame(() => {
-            this.isSyncing = false;
-          });
-        }
-      };
-      
-      this.scrollListeners.fixed = () => {
-        if (!this.isSyncing) {
-          this.isSyncing = true;
-          scrollCol.scrollTop = fixedCol.scrollTop;
-          requestAnimationFrame(() => {
-            this.isSyncing = false;
-          });
-        }
-      };
-      
-      // Add new listeners
-      scrollCol.addEventListener('scroll', this.scrollListeners.scroll);
-      fixedCol.addEventListener('scroll', this.scrollListeners.fixed);
-    }
+    this.setupSynchronizedVerticalScroll(wrapper);
     
     // setStickyOffsets() call removed - CSS vw units handle everything zoom-independently
     // setTimeout(() => {
     //   this.setStickyOffsets();
     // }, 50);
     
-    // === GOALIE-TABELLE unter der Spieler-Tabelle ===
-    this.renderGoalieTable(fixedContainer, tableScrollWrapper);
-    
     // WICHTIG: Flag zurücksetzen
     this.isRendering = false;
+  },
+
+  getSeasonViewStorageKey() {
+    const teamId = App.helpers?.getCurrentTeamId?.();
+    return teamId ? `seasonViewMode_${teamId}` : "seasonViewMode";
+  },
+
+  loadViewMode() {
+    this.viewMode = "player";
+    try {
+      const savedMode = AppStorage.getItem(this.getSeasonViewStorageKey());
+      if (savedMode === "player" || savedMode === "goalie") {
+        this.viewMode = savedMode;
+      }
+    } catch (e) {
+      this.viewMode = "player";
+    }
+    this.updateSeasonViewToggleUI();
+  },
+
+  saveViewMode() {
+    try {
+      AppStorage.setItem(this.getSeasonViewStorageKey(), this.viewMode);
+    } catch (e) {
+      // ignore persistence failures
+    }
+  },
+
+  bindSeasonViewToggle() {
+    if (this.seasonViewListenersBound) {
+      this.updateSeasonViewToggleUI();
+      return;
+    }
+
+    const playerBtn = document.getElementById("seasonViewPlayerBtn");
+    const goalieBtn = document.getElementById("seasonViewGoalieBtn");
+    if (!playerBtn || !goalieBtn) return;
+
+    playerBtn.addEventListener("click", () => this.setViewMode("player"));
+    goalieBtn.addEventListener("click", () => this.setViewMode("goalie"));
+    this.seasonViewListenersBound = true;
+    this.updateSeasonViewToggleUI();
+  },
+
+  setViewMode(mode) {
+    const nextMode = mode === "goalie" ? "goalie" : "player";
+    if (this.viewMode === nextMode) {
+      this.updateSeasonViewToggleUI();
+      return;
+    }
+    this.viewMode = nextMode;
+    this.saveViewMode();
+    this.updateSeasonViewToggleUI();
+    this.render();
+  },
+
+  updateSeasonViewToggleUI() {
+    const playerBtn = document.getElementById("seasonViewPlayerBtn");
+    const goalieBtn = document.getElementById("seasonViewGoalieBtn");
+    if (!playerBtn || !goalieBtn) return;
+
+    const isPlayerMode = this.viewMode !== "goalie";
+    playerBtn.classList.toggle("active", isPlayerMode);
+    goalieBtn.classList.toggle("active", !isPlayerMode);
+    playerBtn.setAttribute("aria-pressed", String(isPlayerMode));
+    goalieBtn.setAttribute("aria-pressed", String(!isPlayerMode));
+  },
+
+  setupSynchronizedVerticalScroll(scopeElement) {
+    const root = scopeElement || document;
+    const fixedCol = root.querySelector('.fixed-columns');
+    const scrollCol = root.querySelector('.scrollable-columns');
+
+    if (!fixedCol || !scrollCol) return;
+
+    if (this.scrollListeners.fixed) {
+      fixedCol.removeEventListener('scroll', this.scrollListeners.fixed);
+    }
+    if (this.scrollListeners.scroll) {
+      scrollCol.removeEventListener('scroll', this.scrollListeners.scroll);
+    }
+
+    this.scrollListeners.scroll = () => {
+      if (!this.isSyncing) {
+        this.isSyncing = true;
+        fixedCol.scrollTop = scrollCol.scrollTop;
+        requestAnimationFrame(() => {
+          this.isSyncing = false;
+        });
+      }
+    };
+
+    this.scrollListeners.fixed = () => {
+      if (!this.isSyncing) {
+        this.isSyncing = true;
+        scrollCol.scrollTop = fixedCol.scrollTop;
+        requestAnimationFrame(() => {
+          this.isSyncing = false;
+        });
+      }
+    };
+
+    scrollCol.addEventListener('scroll', this.scrollListeners.scroll);
+    fixedCol.addEventListener('scroll', this.scrollListeners.fixed);
+  },
+
+  renderGoalieOnlyView() {
+    const wrapper = document.createElement("div");
+    wrapper.className = "season-table-wrapper";
+
+    const fixedContainer = document.createElement("div");
+    fixedContainer.className = "fixed-columns";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scrollable-columns";
+
+    const tableScrollWrapper = document.createElement("div");
+    tableScrollWrapper.className = "table-scroll";
+
+    scrollContainer.appendChild(tableScrollWrapper);
+    wrapper.appendChild(fixedContainer);
+    wrapper.appendChild(scrollContainer);
+    this.container.appendChild(wrapper);
+
+    this.renderGoalieTable(fixedContainer, tableScrollWrapper, { withSeparator: false });
+    this.setupSynchronizedVerticalScroll(wrapper);
   },
 
   // Rendert die Goalie-Saison-Tabelle in dieselben Container wie die Spieler-Tabelle.
   // fixedContainer: .fixed-columns (erhält die sticky Name-Spalte)
   // tableScrollWrapper: .table-scroll (erhält die scrollbaren Spalten)
-  renderGoalieTable(fixedContainer, tableScrollWrapper) {
+  renderGoalieTable(fixedContainer, tableScrollWrapper, options = {}) {
+    const withSeparator = options.withSeparator !== false;
     const goalieSeasonData = App.data.goalieSeasonData || {};
     const goalieNames = Object.keys(goalieSeasonData);
 
-    // --- Dezente Trennung (ohne "GOALIES"-Text) ---
-    const fixedSep = document.createElement("div");
-    fixedSep.className = "goalie-section-separator";
-    fixedSep.style.cssText = "margin-top:8px;height:6px;";
+    if (withSeparator) {
+      // --- Dezente Trennung (ohne "GOALIES"-Text) ---
+      const fixedSep = document.createElement("div");
+      fixedSep.className = "goalie-section-separator";
+      fixedSep.style.cssText = "margin-top:8px;height:6px;";
 
-    const scrollSep = document.createElement("div");
-    scrollSep.className = "goalie-section-separator";
-    scrollSep.style.cssText = "margin-top:8px;height:6px;";
+      const scrollSep = document.createElement("div");
+      scrollSep.className = "goalie-section-separator";
+      scrollSep.style.cssText = "margin-top:8px;height:6px;";
 
-    fixedContainer.appendChild(fixedSep);
-    tableScrollWrapper.appendChild(scrollSep);
+      fixedContainer.appendChild(fixedSep);
+      tableScrollWrapper.appendChild(scrollSep);
+    }
 
     // --- Goalie Fixed-Tabelle (Nr, Goalie, Pos.) ---
     const goalieFixedTable = document.createElement("table");
@@ -716,7 +818,7 @@ setStickyOffsets() {
           this.goalieSortState.asc = true;
         }
         this.render();
-        if (this.positionFilter) this.filterByPosition(this.positionFilter);
+        if (this.viewMode === "player" && this.positionFilter) this.filterByPosition(this.positionFilter);
       });
       gScrollHeaderRow.appendChild(th);
     });
@@ -2124,6 +2226,9 @@ setStickyOffsets() {
   
   filterByPosition(position) {
     this.positionFilter = position;
+    if (this.viewMode !== "player") {
+      return;
+    }
     
     // Get rows from both tables
     const fixedRows = Array.from(document.querySelectorAll('.season-table-fixed tbody tr:not(.total-row)'));

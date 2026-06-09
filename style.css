@@ -252,6 +252,52 @@ h1 {
   -webkit-overflow-scrolling: touch;
 }
 
+.season-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #555;
+  border-radius: 10px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.season-view-btn {
+  border: none;
+  border-right: 1px solid #555;
+  background: #2b2b2b;
+  color: #fff;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.season-view-btn:last-child {
+  border-right: none;
+}
+
+.season-view-btn.active {
+  background: #266EFF;
+  color: #fff;
+}
+
+[data-theme="light"] .season-view-toggle {
+  border-color: #bfc7d8;
+}
+
+[data-theme="light"] .season-view-btn {
+  background: #e9edf5;
+  color: #1a1a1a;
+  border-color: #bfc7d8;
+}
+
+[data-theme="light"] .season-view-btn.active {
+  background: #266EFF;
+  color: #fff;
+}
+
 .top-btn,
 .import-csv-btn {
   background: #2b2b2b;
